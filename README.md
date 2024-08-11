@@ -1,6 +1,6 @@
 # ProACt+
 
-A App to Fight Procrastination With Ease
+An App to Fight Procrastination With Ease
 
 ## Getting Started
 
