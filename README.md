@@ -1,6 +1,6 @@
-# proact
+# ProACt+
 
-A new Flutter project.
+A App to Fight Procrastination With Ease
 
 ## Getting Started
 
