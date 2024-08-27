@@ -24,4 +24,4 @@ Follow these instructions to get a copy of ProAct+ up and running on your local 
 
    ```bash
    git clone https://github.com/Adityan-TS/ProAct.git
-   cd proact-plus
+   cd proact
