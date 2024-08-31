@@ -825,8 +825,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.menu, color: Colors.white),
-                  Icon(Icons.notifications, color: Colors.black),
                 ],
               ),
             ),
@@ -967,7 +965,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.black26,
                 fontSize: 20,
                 fontWeight: FontWeight.w400),
-            hintText: "Enter UserName"),
+            hintText: "Enter Username"),
       )),
       Padding(
           padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
@@ -1565,7 +1563,7 @@ class CalendarPage extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                   builder: (context) => EventCalenderNew(eventData: eventData)),
+                  builder: (context) => EventCalenderNew(eventData: eventData)),
                   // builder: (context) => CalendarPage(eventData: eventData)),
             );
             break;
