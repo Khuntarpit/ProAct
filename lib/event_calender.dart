@@ -235,12 +235,14 @@ class _EventCalenderState extends State<EventCalender> {
     }
   }
 
-   Widget _tileBuilder(
-    CalendarEvent<Event> event,
-    TileConfiguration configuration,
-  ) {
-    final color = event.eventData?.color ?? Colors.black;
-    return Card(
+Widget _tileBuilder(
+  CalendarEvent<Event> event,
+  TileConfiguration configuration,
+) {
+  final color = event.eventData?.color ?? Colors.black;
+  return SizedBox(
+    width: 200, // Set the desired width here
+    child: Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
@@ -249,20 +251,27 @@ class _EventCalenderState extends State<EventCalender> {
       color: configuration.tileType != TileType.ghost
           ? color
           : color.withAlpha(100),
-              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
           Text(
             event.eventData?.title ?? 'New Event',
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w700),
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
           ),
           Text(
             '${event.start.hour - 1}:${event.start.minute} - ${event.end.hour - 1}:${event.end.minute}',
             style: TextStyle(color: Colors.white),
           ),
-        ]),
-    );
-  }
+        ],
+      ),
+    ),
+  );
+}
+
 
   // Widget _tileBuilder(
   //   CalendarEvent<Event> event,

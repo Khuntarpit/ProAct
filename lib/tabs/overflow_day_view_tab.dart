@@ -12,28 +12,23 @@ class OverflowDayViewTab extends HookWidget {
     required this.events,
     this.onTimeTap,
   }) : super(key: key);
+
   final List<DayEvent<String>> events;
   final Function(DateTime)? onTimeTap;
-  
+
   @override
   Widget build(BuildContext context) {
     final timeGap = useState<int>(60);
     final renderAsList = useState<bool>(true);
-
     final cropBottomEvents = useState<bool>(true);
-
     final size = MediaQuery.sizeOf(context);
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
       children: [
         Expanded(
           child: CalendarDayView.overflow(
-            // currentTimeLineColor: Colors.amber,
             onTimeTap: onTimeTap ?? print,
-            timeTextStyle: TextStyle(color: Colors.black26,
-              fontSize: 14
-            ),
+            timeTextStyle: TextStyle(color: Colors.black26, fontSize: 14),
             events: UnmodifiableListView(events),
             dividerColor: Colors.black12,
             currentDate: DateTime.now(),
@@ -62,8 +57,8 @@ class OverflowDayViewTab extends HookWidget {
                     key: ValueKey(event.hashCode),
                     width: !renderAsList.value
                         ? (constraints.minWidth) - 6
-                        : size.width / 4 - 6,
-                    height: constraints.maxHeight-6,
+                        : size.width / 3 - 4,
+                    height: constraints.maxHeight - 6,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(255, 26, 26, 26),
                       border: Border.all(color: Colors.white24, width: 1),
@@ -71,7 +66,7 @@ class OverflowDayViewTab extends HookWidget {
                     ),
                     child: Center(
                       child: Text(
-                        "${event.value}\n${event.start.hour}:${event.start.minute} - ${event.end?.hour}:${event.end?.minute}",
+                        "${event.value}\n${event.start.hour}:${event.start.minute.toString().padLeft(2, '0')} - ${event.end?.hour}:${event.end?.minute.toString().padLeft(2, '0')}",
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.fade,
                         style: TextStyle(
@@ -86,7 +81,6 @@ class OverflowDayViewTab extends HookWidget {
             },
           ),
         ),
-        
       ],
     );
   }
