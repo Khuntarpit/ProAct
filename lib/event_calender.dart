@@ -332,7 +332,7 @@ Widget _tileBuilder(
     CalendarEvent<Event> event,
     MultiDayTileConfiguration configuration,
   ) {
-    final color = event.eventData?.color ?? Colors.blue;
+    final color = event.eventData?.color ?? Colors.white;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 2),
       elevation: configuration.tileType == TileType.selected ? 8 : 0,

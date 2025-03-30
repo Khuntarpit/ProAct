@@ -1,18 +1,29 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
+import 'package:proact/blockapps/screens/home.dart';
+import 'package:proact/blockapps/services/init.dart';
 import 'package:proact/event_calender_new.dart';
+import 'package:proact/network/network_api_services.dart';
 import 'package:proact/notification_service.dart';
+import 'package:proact/reset_password.dart';
+import 'package:proact/time_text_input_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 NotificationService _notifyService = NotificationService();
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initialize();
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -25,9 +36,9 @@ void main() async {
   );
 
   // Initialize Gemini
-  Gemini.init(
-    apiKey: 'AIzaSyDHtx8QtdqWHUpNEd8J_nogM3tjjj5NSEA',
-  );
+  // Gemini.init(
+  //   apiKey: 'AIzaSyDHtx8QtdqWHUpNEd8J_nogM3tjjj5NSEA',
+  // );
 
   Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -466,6 +477,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resetPasswordformKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -546,7 +558,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return 'Please enter your email address';
                       }
                       if (!RegExp(r'^[^@]+@[^@]+\.[a-zA-Z]{2,}$')
-                          .hasMatch(value)) {
+                          .hasMatch(value.trim())) {
                         return 'Please enter a valid email address';
                       }
                       return null;
@@ -576,7 +588,157 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 24),
+                  SizedBox(height: 10),
+                  TextButton(
+                      onPressed: () {
+                        // widget.supabaseClient.auth.resetPasswordForEmail(email);
+                        // widget.supabaseClient.auth.updateUser(UserAttributes());
+
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                backgroundColor: Colors.white,
+                                title: Text("Reset Password"),
+                                titleTextStyle: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                    color: Color(0xFF1A1A1A)),
+                                buttonPadding: EdgeInsets.all(25),
+                                actions: [
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      "Cancel",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      if (_resetPasswordformKey.currentState!
+                                          .validate()) {
+                                        Navigator.pop(context);
+                                        BuildContext? progressContext = null;
+                                        final email =
+                                            _emailController.text.trim();
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              progressContext = context;
+                                              return Dialog(
+                                                child: new Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    new CircularProgressIndicator(),
+                                                    new Text(
+                                                        "Check your email for token"),
+                                                  ],
+                                                ),
+                                              );
+                                            });
+
+                                        widget.supabaseClient.auth
+                                            .resetPasswordForEmail(email)
+                                            // .resetPasswordForEmail(email)
+                                            .then((value) {
+                                          // print("value ");
+                                          if (progressContext != null) {
+                                            Navigator.pop(progressContext!);
+                                            Navigator.push(
+                                                progressContext!,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ResetPassword(
+                                                          supabaseClient: widget
+                                                              .supabaseClient,
+                                                          email: email,
+                                                        )));
+                                          }
+                                        }).catchError((error) {
+                                          print("error");
+                                        });
+                                      }
+                                    },
+                                    child: Text(
+                                      "Send Token",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                content: Container(
+                                  decoration:
+                                      BoxDecoration(color: Colors.white),
+                                  child: Form(
+                                      key: _resetPasswordformKey,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextFormField(
+                                            controller: _emailController,
+                                            decoration: InputDecoration(
+                                              labelText: 'Email Address',
+                                              hintStyle:
+                                                  TextStyle(color: Colors.grey),
+                                              fillColor: Color(0xFFf1f5f9),
+                                              filled: true,
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                      vertical: 16.0,
+                                                      horizontal: 12.0),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                borderSide: BorderSide.none,
+                                              ),
+                                            ),
+                                            style: GoogleFonts.poppins(),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter your email address';
+                                              }
+                                              if (!RegExp(
+                                                      r'^[^@]+@[^@]+\.[a-zA-Z]{2,}$')
+                                                  .hasMatch(value)) {
+                                                return 'Please enter a valid email address';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ],
+                                      )),
+                                ),
+                              );
+                            });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.only(
+                          bottom: 3, // Space between underline and text
+                        ),
+                        decoration: BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                          color: Color(0xFF1A1A1A),
+                          width: 1.0, // Underline thickness
+                        ))),
+                        child: Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Color(0xFF1A1A1A),
+                          ),
+                        ),
+                      )),
+                  SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
@@ -584,6 +746,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         final password = _passwordController.text.trim();
 
                         // Perform login using Supabase
+
                         final response =
                             await widget.supabaseClient.auth.signInWithPassword(
                           email: email,
@@ -686,8 +849,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String emailPrefix = '';
   List<Map<String, String>> eventData = [];
 
-  // Move the showGeminiPrompt function here
-  void showGeminiPrompt() {
+  void showGeminiPrompt(int eventId) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -696,12 +858,15 @@ class _MyHomePageState extends State<MyHomePage> {
         return Container(
           padding: EdgeInsets.all(16.0),
           height: MediaQuery.of(context).size.height / 2,
-          child: GeminiPrompt(onSubmit: (data) {
-            setState(() {
-              eventData.addAll(data);
-            });
-            saveEventData(); // Save eventData after adding new tasks
-          }),
+          child: GeminiPrompt(
+            onSubmit: (data) {
+              setState(() {
+                eventData.addAll(data);
+              });
+              saveEventData(); // Save eventData after adding new tasks
+            },
+            eventId: eventId,
+          ),
         );
       },
     );
@@ -713,6 +878,12 @@ class _MyHomePageState extends State<MyHomePage> {
     getUserEmail();
     loadEventData(); // Load stored eventData when the widget initializes
     resetEventDataIfNeeded(); // Reset eventData if it's a new day
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   void getUserEmail() async {
@@ -740,7 +911,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void saveEventData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('eventData', jsonEncode(eventData));
+    print("saving event data ${eventData}");
+    String eventData_json = jsonEncode(eventData);
+    await prefs.setString('eventData', eventData_json);
+    await Get.find<MethodChannelController>().saveEvents(eventData_json);
   }
 
   void loadEventData() async {
@@ -764,17 +938,22 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
         body: HomeScreen(
+          showGeminiPrompt: showGeminiPrompt,
           emailPrefix: emailPrefix,
           eventData: eventData,
-          deleteEvent: deleteEvent, // Pass deleteEvent function
+          deleteEvent: deleteEvent,
+          saveEventData: saveEventData, // Pass deleteEvent function
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: Container(
-          margin: EdgeInsets.only(bottom: 70.0),
+          margin: EdgeInsets.only(
+            bottom: 30.0,
+          ),
           child: FloatingActionButton(
-            onPressed: showGeminiPrompt,
+            onPressed: () {
+              showGeminiPrompt(-1);
+            },
             backgroundColor: Color(0xFF1a1a1a),
             child: Icon(Icons.chat, color: Colors.white),
           ),
@@ -785,20 +964,102 @@ class _MyHomePageState extends State<MyHomePage> {
 class HomeScreen extends StatefulWidget {
   String emailPrefix;
   final List<Map<String, String>> eventData;
-  final Function(int) deleteEvent; // Define deleteEvent function
+  final Function(int) deleteEvent;
+  final Function() saveEventData;
+  final Function(int) showGeminiPrompt;
 
   HomeScreen(
       {required this.emailPrefix,
       required this.eventData,
-      required this.deleteEvent});
+      required this.deleteEvent,
+      required this.saveEventData,
+      required this.showGeminiPrompt});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   bool editUserName = false;
   final TextEditingController uNameController = TextEditingController();
+  late AnimationController progreesController;
+
+  @override
+  void initState() {
+    progreesController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..addListener(() {
+        setState(() {});
+      });
+
+    super.initState();
+  }
+
+  showBlockAppDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              margin: EdgeInsets.fromLTRB(25, 30, 25, 30),
+              child: BlockedHomePage());
+        });
+  }
+
+  getTaskDoneStatus() {
+    if (widget.eventData.length > 0) {
+      print("object");
+      int totalTasks = widget.eventData.length;
+      int doneTasks = 0;
+      for (var i = 0; i < widget.eventData.length; i++) {
+        if (widget.eventData[i]['doneStatus'] == 'true') {
+          doneTasks++;
+        }
+      }
+      double value = doneTasks / totalTasks;
+      if (totalTasks == 0)
+        progreesController.value = 0;
+      else
+        progreesController.value = doneTasks / totalTasks;
+      print(
+          'task progress ${widget.eventData} done tasks, ${doneTasks} total tasks ${totalTasks}');
+
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: EdgeInsets.only(right: 10),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(15))),
+            height: 22,
+            padding: EdgeInsets.all(3),
+            width: 200,
+            child: LinearProgressIndicator(
+              semanticsValue: "Task Progress",
+              semanticsLabel: "Task Progress",
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              // backgroundColor: Colors.blue,
+              color: Color(0xFF1A1A1A),
+              backgroundColor: Colors.white,
+
+              value: progreesController.value,
+            ),
+          ),
+          Text(
+            "${(progreesController.value * 100).toInt()}%",
+            style: TextStyle(
+                color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+          )
+        ],
+      );
+    } else {
+      return Container();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -808,31 +1069,24 @@ class _HomeScreenState extends State<HomeScreen> {
         : 'You Have a Pretty Busy Day';
 
     return Scaffold(
+      appBar: AppBar(
+          leading: null, backgroundColor: Colors.transparent, actions: null),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Padding(
+            //   padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [],
+            //   ),
+            // ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                ],
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   editUserName
                       ? getEditNameView(widget.emailPrefix)
@@ -849,7 +1103,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           )),
-                  SizedBox(height: 8),
+                  // SizedBox(height: 8),
+                  InkWell(
+                    onTap: () {
+                      if (Platform.isAndroid) {
+                        showBlockAppDialog();
+                      }
+                    },
+                    child: Padding(
+                        padding: EdgeInsets.all(20), child: Icon(Icons.lock)),
+                  )
                 ],
               ),
             ),
@@ -872,14 +1135,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    SizedBox(height: 15),
                     Row(
                       children: [
                         Icon(Icons.work, color: Colors.white, size: 16),
                         SizedBox(width: 4),
                         Text('$pendingTasks tasks',
                             style: TextStyle(color: Colors.white)),
-                        SizedBox(width: 2),
+                        SizedBox(width: 20),
+                        //Progressbar
+                        getTaskDoneStatus()
                       ],
                     ),
                     SizedBox(height: 8),
@@ -904,12 +1169,241 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemCount: widget.eventData.length,
                 itemBuilder: (context, index) {
                   return EventCard(
-                    event: widget.eventData[index],
-                    onDelete: () {
-                      widget.deleteEvent(index); // Call deleteEvent with index
-                      _notifyService.cancelEventNotification(index);
-                    },
-                  );
+                      event: widget.eventData[index],
+                      showGeminiPrompt: () {
+                        widget.showGeminiPrompt(index);
+                      },
+                      onDelete: () {
+                        widget
+                            .deleteEvent(index); // Call deleteEvent with index
+                        _notifyService.cancelEventNotification(index);
+                      },
+                      markAsDone: (value) {
+                        var event = widget.eventData[index];
+                        setState(() {
+                          if (value!) {
+                            event['doneStatus'] = 'true';
+                          } else {
+                            event['doneStatus'] = 'false';
+                          }
+                        });
+                        widget.saveEventData();
+                      },
+                      onEdit: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            var event = widget.eventData[index];
+                            final TextEditingController taskNameController =
+                                TextEditingController();
+                            final TextEditingController txtStartTimeController =
+                                TextEditingController();
+                            final TextEditingController txtEndTimeController =
+                                TextEditingController();
+                            taskNameController.text = event["name"]!;
+                            txtStartTimeController.text = event["startTime"]!;
+                            txtEndTimeController.text = event["endTime"]!;
+
+                            print("edit event ${event}");
+                            return AlertDialog(
+                              title: Text("Edit Task"),
+                              titleTextStyle: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: Color(0xFF1A1A1A)),
+                              buttonPadding: EdgeInsets.all(25),
+                              actions: [
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Cancel",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      event["name"] = taskNameController.text;
+                                      event["startTime"] =
+                                          txtStartTimeController.text;
+                                      event["endTime"] =
+                                          txtEndTimeController.text;
+                                      event["currenttimeinmillis"] =
+                                          '${DateTime.now().millisecondsSinceEpoch}';
+                                    });
+                                    widget.saveEventData();
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text(
+                                    "Save Task",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Task Name",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  TextField(
+                                    maxLines: null,
+                                    controller: taskNameController,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400),
+                                    decoration: InputDecoration(
+                                        hintStyle: TextStyle(
+                                            color: Colors.black26,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w400),
+                                        hintText: "Task Name"),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Text(
+                                    "Start Time",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  IconButton(
+                                      onPressed: () async {
+                                        List startTime =
+                                            event["startTime"]!.split(":");
+                                        int startHour = int.parse(startTime[0]);
+                                        int startMin = int.parse(startTime[1]);
+                                        TimeOfDay? timePicked =
+                                            await showTimePicker(
+                                                context: context,
+                                                initialEntryMode:
+                                                    TimePickerEntryMode.dial,
+                                                initialTime: TimeOfDay(
+                                                    hour: startHour,
+                                                    minute: startMin),
+                                                builder: (BuildContext context,
+                                                    Widget? child) {
+                                                  return MediaQuery(
+                                                    data: MediaQuery.of(context)
+                                                        .copyWith(
+                                                            alwaysUse24HourFormat:
+                                                                true),
+                                                    child: child!,
+                                                  );
+                                                });
+                                        if (timePicked != null) {
+                                          String pickedHour =
+                                              timePicked.hour > 9
+                                                  ? "${timePicked.hour}"
+                                                  : "0${timePicked.hour}";
+                                          String pickedMin =
+                                              timePicked.minute > 9
+                                                  ? "${timePicked.minute}"
+                                                  : "0${timePicked.minute}";
+                                          setState(() {
+                                            event["startTime"] =
+                                                "${pickedHour}:${pickedMin}";
+                                            txtStartTimeController.text =
+                                                "${pickedHour}:${pickedMin}";
+                                          });
+                                        }
+                                      },
+                                      icon: Icon(Icons.punch_clock)),
+                                  // Text("HI ${txtStartTimeController.text}"),
+                                  TextField(
+                                    readOnly: true,
+                                    controller: txtStartTimeController,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  Text(
+                                    "End Time",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+
+                                  IconButton(
+                                      onPressed: () async {
+                                        List endTime =
+                                            event["endTime"]!.split(":");
+                                        int endHour = int.parse(endTime[0]);
+                                        int endMin = int.parse(endTime[1]);
+                                        TimeOfDay? timePicked =
+                                            await showTimePicker(
+                                                context: context,
+                                                initialEntryMode:
+                                                    TimePickerEntryMode.dial,
+                                                initialTime: TimeOfDay(
+                                                    hour: endHour,
+                                                    minute: endMin),
+                                                builder: (BuildContext context,
+                                                    Widget? child) {
+                                                  return MediaQuery(
+                                                    data: MediaQuery.of(context)
+                                                        .copyWith(
+                                                            alwaysUse24HourFormat:
+                                                                true),
+                                                    child: child!,
+                                                  );
+                                                });
+                                        if (timePicked != null) {
+                                           String pickedHour =
+                                              timePicked.hour > 9
+                                                  ? "${timePicked.hour}"
+                                                  : "0${timePicked.hour}";
+                                          String pickedMin =
+                                              timePicked.minute > 9
+                                                  ? "${timePicked.minute}"
+                                                  : "0${timePicked.minute}";
+                                          setState(() {
+                                            event["endTime"] =
+                                                "${pickedHour}:${pickedMin}";
+                                            txtEndTimeController.text =
+                                                "${pickedHour}:${pickedMin}";
+                                          });
+                                        }
+                                      },
+                                      icon: Icon(Icons.punch_clock)),
+                                  // Text("HI ${txtStartTimeController.text}"),
+
+                                  TextField(
+                                    readOnly: true,
+                                    controller: txtEndTimeController,
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      });
                 },
               ),
             ),
@@ -936,14 +1430,26 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: (index) {
           switch (index) {
             case 0:
-              Navigator.pushNamed(context, '/home');
+              // Navigator.pushNamed(context, '/home');
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      MyHomePage(title: 'Flutter App Home Page'),
+                ),
+
+                // EventCalender(eventData: widget.eventData))
+                // builder: (context) => CalendarPage(eventData: widget.eventData)),
+              );
               break;
             case 1:
-              Navigator.push(
+              Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => EventCalenderNew(eventData: widget.eventData,))
-                          // EventCalender(eventData: widget.eventData))
+                      builder: (context) => EventCalenderNew(
+                            eventData: widget.eventData,
+                          ))
+                  // EventCalender(eventData: widget.eventData))
                   // builder: (context) => CalendarPage(eventData: widget.eventData)),
                   );
               break;
@@ -1002,14 +1508,29 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class EventCard extends StatelessWidget {
+class EventCard extends StatefulWidget {
   final Map<String, String> event;
-  final Function onDelete; // New parameter for onDelete function
+  final Function onDelete;
+  final Function onEdit;
+  final Function showGeminiPrompt;
+  final Function markAsDone;
 
-  EventCard({required this.event, required this.onDelete});
+  const EventCard(
+      {super.key,
+      required this.event,
+      required this.onDelete,
+      required this.onEdit,
+      required this.showGeminiPrompt,
+      required this.markAsDone});
 
   @override
+  State<EventCard> createState() => _EventCardState();
+}
+
+class _EventCardState extends State<EventCard> {
+  @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.sizeOf(context).width;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
@@ -1029,37 +1550,81 @@ class EventCard extends StatelessWidget {
                   children: [
                     Icon(Icons.event, color: Colors.blueAccent, size: 20),
                     SizedBox(width: 8),
-                    Text(
-                      event['name'] ?? '',
-                      style: GoogleFonts.poppins(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      width: ((screenWidth - 10) / 2),
+                      child: Text(
+                        '${widget.event['name']}' ?? '',
+                        softWrap: true,
+                        style: GoogleFonts.poppins(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
+                    )
                   ],
                 ),
-                IconButton(
-                  icon: Icon(Icons.delete,
-                      color: Color(0xFF1A1A1A)), // Delete icon button
-                  onPressed: () {
-                    onDelete(); // Call onDelete function when pressed
-                  },
-                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit,
+                          color: Color(0xFF1A1A1A)), // Delete icon button
+                      onPressed: () {
+                        widget.onEdit();
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete,
+                          color: Color(0xFF1A1A1A)), // Delete icon button
+                      onPressed: () {
+                        widget
+                            .onDelete(); // Call onDelete function when pressed
+                      },
+                    ),
+                  ],
+                )
               ],
             ),
             SizedBox(height: 8),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
               children: [
-                Icon(Icons.schedule, color: Colors.blueAccent, size: 20),
-                SizedBox(width: 8),
-                Text(
-                  'Start Time: ${event['startTime'] ?? ''}',
-                  style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontSize: 14,
+                Row(children: [
+                  Icon(Icons.schedule, color: Colors.blueAccent, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'Start Time: ${widget.event['startTime'] ?? ''}',
+                    style: GoogleFonts.poppins(
+                      color: Colors.black,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
+                ]),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.message_rounded,
+                          color: Color(0xFF1A1A1A)), // Delete icon button
+                      onPressed: () {
+                        widget.showGeminiPrompt();
+                      },
+                    ),
+                    Checkbox(
+                        value: widget.event['doneStatus'] == 'true',
+                        checkColor: Colors.white,
+                        activeColor: Color(0xFF1A1A1A),
+                        onChanged: (value) {
+                          print("checkbox on changed");
+                          setState(() {
+                            widget.markAsDone(value);
+                          });
+                        })
+                  ],
+                )
               ],
             ),
             SizedBox(height: 4),
@@ -1068,7 +1633,7 @@ class EventCard extends StatelessWidget {
                 Icon(Icons.access_time, color: Colors.blueAccent, size: 20),
                 SizedBox(width: 8),
                 Text(
-                  'End Time: ${event['endTime'] ?? ''}',
+                  'End Time: ${widget.event['endTime'] ?? ''}',
                   style: GoogleFonts.poppins(
                     color: Colors.black,
                     fontSize: 14,
@@ -1085,8 +1650,9 @@ class EventCard extends StatelessWidget {
 
 class GeminiPrompt extends StatefulWidget {
   final Function(List<Map<String, String>>) onSubmit;
+  final int eventId;
 
-  GeminiPrompt({required this.onSubmit});
+  GeminiPrompt({required this.onSubmit, required this.eventId});
 
   @override
   _GeminiPromptState createState() => _GeminiPromptState();
@@ -1096,8 +1662,102 @@ class _GeminiPromptState extends State<GeminiPrompt> {
   final TextEditingController _controller = TextEditingController();
   String _response = '';
 
-  Future<void> _submitPromptToGemini(String prompt) async {
-    final gemini = Gemini.instance; // Initialize Gemini instance
+  Future<void> _submitEventPromptToGemini(String prompt) async {
+    try {
+      // Define events variable and add event details to the prompt
+      List<Map<String, String>> events =
+          []; // Replace with your actual events list
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String eventDataJson = prefs.getString('eventData') ?? '[]';
+      events = List<Map<String, String>>.from(
+        (jsonDecode(eventDataJson) as List)
+            .map((e) => Map<String, String>.from(e)),
+      );
+
+      String? startTime =
+          events[widget.eventId]['startTime']; // nullable String
+      String? endTime = events[widget.eventId]['endTime']; // nullable String
+
+      String promptWithMessage =
+          'Imagine you have been given the following task: "' +
+              events[widget.eventId]["name"]! +
+              ' from ' +
+              startTime! +
+              ' to ' +
+              endTime! +
+              '". To better understand and approach this task effectively, consider asking questions that clarify: ' +
+              prompt;
+
+      print("prompt message ${promptWithMessage}");
+
+      final newresponse =
+          await NetworkApiServices().postAIPromptApi(promptWithMessage);
+
+      // print("gemini:* " + response!.output! + " ***");
+      print("llama # " +
+          newresponse["choices"][0]["message"]["content"] +
+          " ###");
+      if (newresponse != null &&
+          newresponse["choices"] != null &&
+          newresponse["choices"].length > 0 &&
+          newresponse["choices"][0]["message"] != null &&
+          newresponse["choices"][0]["message"]["content"] != null) {
+        // setState(() {
+        String response = newresponse["choices"][0]["message"]["content"] ??
+            'No response received'; // Display AI response
+        print("response from ai ${response}");
+        _controller.clear(); // Clear the text field after submission
+        // });
+        Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                backgroundColor: Colors.black26,
+                title: Text(
+                  '${prompt} for \n"${events[widget.eventId]["name"]}"',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ))
+                ],
+                content: Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(color: Colors.white),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Text(
+                      response,
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ),
+              );
+            });
+      }
+    } catch (e) {
+      print('Error sending prompt to AI: $e');
+      // Handle error scenario, such as showing a snackbar
+    }
+  }
+
+  Future<void> _submitCreateEventPromptToGemini(String prompt) async {
+    // final gemini = Gemini.instance; // Initialize Gemini instance
 
     try {
       // Get current time formatted in 24-hour format
@@ -1151,15 +1811,14 @@ class _GeminiPromptState extends State<GeminiPrompt> {
 
       // promptWithMessage += 'Busy Timings: ${usedTimings.join(', ')}';
 
-      promptWithMessage +=
-      '    \nUse This Format:\n'
-          'No Of Tasks = (x)\n'
-          'Task 1) # (NAME OF TASK) # START TIME - END TIME\n'
-          'Do not use any bullet points or anything extra as this response will be decoded by a program that only accepts responses in the provided format.\n' +
-              'Use 24-hour format for the time.\n' +
-              '*MAKE SURE TO INCLUDE THE # OR ELSE THE RESPONSE WONT BE DECODED*\n' +
-              '*MAKE SURE YOU GIVE THE START TIME FROM THE **NEXT PERFECT HOUR AFTER ($currentTime)*.\n' +
-              '*DONT WRITE ANYTHING EXTRA THATS NOT IN THE FORMAT AND RESPOND IN 24HR FORMAT .**\n';
+      promptWithMessage += ' \nUse This Format:\n'
+              'No Of Tasks = (x)\n'
+              'Task 1) # (NAME OF TASK) # START TIME - END TIME\n'
+              'Do not use any bullet points or anything extra as this response will be decoded by a program that only accepts responses in the provided format.\n' +
+          'Use 24-hour format for the time.\n' +
+          '*MAKE SURE TO INCLUDE THE # OR ELSE THE RESPONSE WONT BE DECODED*\n' +
+          '*MAKE SURE YOU GIVE THE START TIME FROM THE **NEXT PERFECT HOUR AFTER ($currentTime)*.\n' +
+          '*DONT WRITE ANYTHING EXTRA THATS NOT IN THE FORMAT AND RESPOND IN 24HR FORMAT .**\n';
 
       print("prompt message ${promptWithMessage}");
 
@@ -1178,21 +1837,40 @@ class _GeminiPromptState extends State<GeminiPrompt> {
       // print(tmpPromptMsg);
 
       // Send prompt to Gemini and receive response
-      final Candidates? response = await gemini.text(promptWithMessage);
+      // final Candidates? response = await gemini.text(promptWithMessage);
 
-      setState(() {
-        _response = response?.output ??
-            'No response received'; // Display Gemini's response
-        _controller.clear(); // Clear the text field after submission
-      });
+      final newresponse =
+          await NetworkApiServices().postAIPromptApi(promptWithMessage);
 
-      // Parse response into a list of event data
-      List<Map<String, String>> parsedEventData =
-          _parseEventData(response?.output, events.length);
-      widget
-          .onSubmit(parsedEventData); // Pass parsed data back to parent widget
+      // print("gemini:* " + response!.output! + " ***");
+      print("llama # " +
+          newresponse["choices"][0]["message"]["content"] +
+          " ###");
+      if (newresponse != null &&
+          newresponse["choices"] != null &&
+          newresponse["choices"].length > 0 &&
+          newresponse["choices"][0]["message"] != null &&
+          newresponse["choices"][0]["message"]["content"] != null) {
+        setState(() {
+          _response = newresponse["choices"][0]["message"]["content"] ??
+              'No response received'; // Display AI response
+          _controller.clear(); // Clear the text field after submission
+        });
+
+        // Parse response into a list of event data
+        List<Map<String, String>> parsedEventData = _parseEventData(
+            newresponse["choices"][0]["message"]["content"], events.length);
+        widget.onSubmit(
+            parsedEventData); // Pass parsed data back to parent widget
+      } else {
+        setState(() {
+          _response = 'No response received'; // Display NO response
+          _controller.clear(); // Clear the text field after submission
+        });
+        return;
+      }
     } catch (e) {
-      print('Error sending prompt to Gemini: $e');
+      print('Error sending prompt to AI: $e');
       // Handle error scenario, such as showing a snackbar
     }
   }
@@ -1230,14 +1908,14 @@ class _GeminiPromptState extends State<GeminiPrompt> {
               var timings = startTime.split(":");
               int startHour = int.parse(timings[0]);
               int startMinutes = int.parse(timings[1].substring(0, 2));
-              var startDateTime =
-                  DateTime(now.year, now.month, now.day, startHour, startMinutes);
+              var startDateTime = DateTime(
+                  now.year, now.month, now.day, startHour, startMinutes);
               startDateTime = startDateTime.subtract(Duration(minutes: 5));
 
               print("new event number ${prevEventCount + eventData.length}");
               int eventNotifyId = prevEventCount + eventData.length;
               _notifyService.scheduleNotification(
-                  "New Event",
+                  "Remainder",
                   "${name} ${startTime} - ${endTime}",
                   eventNotifyId,
                   startDateTime.day,
@@ -1247,6 +1925,8 @@ class _GeminiPromptState extends State<GeminiPrompt> {
                 'name': name,
                 'startTime': startTime,
                 'endTime': endTime,
+                'currenttimeinmillis': '${now.millisecondsSinceEpoch}',
+                'donesStatus': 'false'
               });
             }
           }
@@ -1294,7 +1974,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
                         color: Colors.blueGrey[100],
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                      child: Text('Gemini: $_response'),
+                      child: Text('AI response: $_response'),
                     ),
                 ],
               ),
@@ -1333,7 +2013,11 @@ class _GeminiPromptState extends State<GeminiPrompt> {
                     icon: Icon(Icons.send, color: Colors.black),
                     onPressed: () {
                       if (_controller.text.isNotEmpty) {
-                        _submitPromptToGemini(_controller.text);
+                        if (widget.eventId >= 0) {
+                          _submitEventPromptToGemini(_controller.text);
+                        } else {
+                          _submitCreateEventPromptToGemini(_controller.text);
+                        }
                       }
                     },
                   ),
@@ -1557,14 +2241,24 @@ class CalendarPage extends StatelessWidget {
       onTap: (index) {
         switch (index) {
           case 0:
-            Navigator.pushNamed(context, '/home');
+            // Navigator.pushNamed(context, '/home');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    MyHomePage(title: 'Flutter App Home Page'),
+              ),
+
+              // EventCalender(eventData: widget.eventData))
+              // builder: (context) => CalendarPage(eventData: widget.eventData)),
+            );
             break;
           case 1:
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (context) => EventCalenderNew(eventData: eventData)),
-                  // builder: (context) => CalendarPage(eventData: eventData)),
+              // builder: (context) => CalendarPage(eventData: eventData)),
             );
             break;
         }
