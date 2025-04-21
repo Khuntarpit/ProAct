@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:device_apps/device_apps.dart';
+import 'package:new_device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get/instance_manager.dart';

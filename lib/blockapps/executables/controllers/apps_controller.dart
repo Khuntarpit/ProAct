@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'dart:typed_data';
-import 'package:device_apps/device_apps.dart';
+import 'package:new_device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
