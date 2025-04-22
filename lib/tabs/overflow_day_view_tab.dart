@@ -28,9 +28,9 @@ class OverflowDayViewTab extends HookWidget {
         Expanded(
           child: CalendarDayView.overflow(
             onTimeTap: onTimeTap ?? print,
-            timeTextStyle: TextStyle(color: Colors.black26, fontSize: 14),
+            timeTextStyle: TextStyle(color: Theme.of(context).primaryColor, fontSize: 14),
             events: UnmodifiableListView(events),
-            dividerColor: Colors.black12,
+            dividerColor: Colors.grey,
             currentDate: DateTime.now(),
             timeGap: timeGap.value,
             heightPerMin: 1.5,

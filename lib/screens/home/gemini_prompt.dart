@@ -305,7 +305,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set background color to white
+       // Set background color to white
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -348,7 +348,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: Colors.grey[100],
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10.0),
                 topRight: Radius.circular(10.0),

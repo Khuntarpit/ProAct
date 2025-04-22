@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:proact/blockapps/screens/home.dart';
+import 'package:proact/routes/routes.dart';
 import 'package:proact/screens/home/tabs/event_calender_new.dart';
 import 'package:proact/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,23 +119,35 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         : 'You Have a Pretty Busy Day';
 
     return Scaffold(
+
       appBar: AppBar(
         leading: null, backgroundColor: Colors.transparent,
-        title: editUserName
-            ? getEditNameView(widget.emailPrefix)
-            : TextButton(
-            onPressed: () {
-              setState(() {
-                editUserName = true;
-              });
-            },
-            child: Text(
-              'Hi, ${widget.emailPrefix}',
-              style: GoogleFonts.poppins(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+        title: Row(
+          children: [
+            InkWell(
+              onTap:() =>  Get.toNamed(Routes.profileScreen),
+              child: CircleAvatar(
+                child: Icon(Icons.person,color: Colors.black,),
+                backgroundColor: Colors.white,
               ),
-            )),
+            ),
+            editUserName
+                ? getEditNameView(widget.emailPrefix)
+                : TextButton(
+                onPressed: () {
+                  setState(() {
+                    editUserName = true;
+                  });
+                },
+                child: Text(
+                  'Hi, ${widget.emailPrefix}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )),
+          ],
+        ),
         actions: [
           InkWell(
             onTap: () {
@@ -143,12 +156,11 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               }
             },
             child: Padding(
-              padding: EdgeInsets.all(20), child: Icon(Icons.lock),
+              padding: EdgeInsets.all(20), child: Icon(Icons.lock,color: Theme.of(context).iconTheme.color,),
             ),
           ),
         ],
       ),
-      backgroundColor: Colors.white,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -7,6 +7,7 @@ import 'package:proact/screens/auth/signup_screen.dart';
 import 'package:proact/screens/home/home_screen.dart';
 import 'package:proact/screens/splash_screen.dart';
 
+import '../screens/profile/profile_screen.dart';
 import 'routes.dart';
 
 class Screens{
@@ -18,6 +19,7 @@ class Screens{
     GetPage(name: Routes.signupScreen, page: () => SignUpScreen(),),
     GetPage(name: Routes.resetPasswordScreen, page: () => ResetPassword(),),
     GetPage(name: Routes.homeScreen, page: () => HomeScreen(),),
+    GetPage(name: Routes.profileScreen, page: () => ProfileScreen(),),
   ];
 
 }

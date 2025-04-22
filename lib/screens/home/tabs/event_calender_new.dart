@@ -52,9 +52,8 @@ class EventCalenderNew extends HookWidget {
     return SafeArea(
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        backgroundColor: Colors.white,
         appBar: CustomAppBar(
-          height: 170,
+          height: 120,
         ),
         body: Container(
           padding: EdgeInsets.fromLTRB(5, 20, 5, 5),
@@ -69,95 +68,96 @@ class EventCalenderNew extends HookWidget {
   }
 }
 
-
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  // final Widget child;
   final double height;
 
-  CustomAppBar({
-    this.height = kToolbarHeight,
-  });
+  CustomAppBar({this.height = kToolbarHeight});
 
   @override
-  Size get preferredSize => Size.fromHeight(height);
+  Size get preferredSize => Size.fromHeight(height + 80); // added height for extra content
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final today = DateTime.now();
-    final startOfWeek =
-        today.subtract(Duration(days: today.weekday - DateTime.monday));
-    final daysOfWeek =
-        List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
+    final startOfWeek = today.subtract(Duration(days: today.weekday - DateTime.monday));
+    final daysOfWeek = List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
 
     return Material(
-        elevation: 1,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20.0),
-          bottomRight: Radius.circular(20.0),
-        ),
-        child: Container(
-          height: preferredSize.height,
-          padding: EdgeInsets.fromLTRB(16.0, 40, 16.0, 16.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20.0),
-              bottomRight: Radius.circular(20.0),
-            ),
+      elevation: 1,
+      borderRadius: BorderRadius.only(
+        bottomLeft: Radius.circular(20.0),
+        bottomRight: Radius.circular(20.0),
+      ),
+      child: Container(
+        height: preferredSize.height,
+        padding: EdgeInsets.fromLTRB(16.0, 40, 16.0, 16.0),
+        decoration: BoxDecoration(
+          color: theme.iconTheme.color,
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20.0),
+            bottomRight: Radius.circular(20.0),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  DateFormat('MMMM yyyy').format(today),
-                  style: GoogleFonts.poppins(
-                    textStyle:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                DateFormat('MMMM yyyy').format(today),
+                style: GoogleFonts.poppins(
+                  textStyle: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: theme.scaffoldBackgroundColor,
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: daysOfWeek.map((day) {
-                  final isToday = day.day == today.day &&
-                      day.month == today.month &&
-                      day.year == today.year;
-                  return Expanded(
-                    child: Column(
-                      children: [
-                        Text(
-                          DateFormat('EEE').format(day),
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: daysOfWeek.map((day) {
+                final isToday = day.day == today.day &&
+                    day.month == today.month &&
+                    day.year == today.year;
+                return Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        DateFormat('EEE').format(day),
+                        style: GoogleFonts.poppins(
+                          textStyle: TextStyle(
+                            color: theme.textTheme.bodyMedium?.color,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      CircleAvatar(
+                        backgroundColor:
+                        isToday ? theme.primaryColor : Colors.transparent,
+                        radius: 15,
+                        child: Text(
+                          day.day.toString(),
                           style: GoogleFonts.poppins(
                             textStyle: TextStyle(
-                              color: Color.fromARGB(255, 26, 26, 26),
-                              fontWeight: FontWeight.bold,
+                              color: isToday
+                                  ? Colors.redAccent
+                                  : theme.textTheme.bodyMedium?.color,
                             ),
                           ),
                         ),
-                        SizedBox(height: 5),
-                        CircleAvatar(
-                          backgroundColor:
-                              isToday ? Color(0xFF1A1A1A) : Colors.transparent,
-                          radius: 15,
-                          child: Text(
-                            day.day.toString(),
-                            style: GoogleFonts.poppins(
-                              textStyle: TextStyle(
-                                color: isToday ? Colors.white : Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-        ));
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

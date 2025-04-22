@@ -6,6 +6,7 @@ import 'package:proact/blockapps/services/init.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'constants/constants.dart';
+import 'core/value/theme_data.dart';
 import 'custom_elements/custom_elements.dart';
 import 'notification_service.dart';
 import 'routes/routes.dart';
@@ -45,13 +46,16 @@ class _ProActState extends State<ProAct> {
     return Sizer(builder: (context, orientation, deviceType) {
       return GetMaterialApp(
         title: 'ProAct',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          scaffoldBackgroundColor: Color(0xFF1A1A1A), // Set background color to hex #1a1a1a
-        ),
-        builder: EasyLoading.init(
-          builder: (context, child) => child!,
-        ),
+        // theme: ThemeData(
+        //   primarySwatch: Colors.blue,
+        //   scaffoldBackgroundColor: Color(0xFF1A1A1A), // Set background color to hex #1a1a1a
+        // ),
+        // builder: EasyLoading.init(
+        //   builder: (context, child) => child!,
+        // ),
+        themeMode: ThemeMode.dark,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         getPages: Screens.routes,
         initialRoute: Routes.splashScreen,
         debugShowCheckedModeBanner: false,

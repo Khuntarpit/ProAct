@@ -6,4 +6,5 @@ class Routes{
   static const loginScreen = '/login';
   static const signupScreen = '/signup';
   static const resetPasswordScreen = '/reset-password';
+  static const profileScreen = '/profile';
 }

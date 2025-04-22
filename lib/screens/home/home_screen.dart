@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) {
         return Container(
           padding: EdgeInsets.all(16.0),
@@ -104,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
         body: currentIndex == 0 ?  DashboardScreen(
           showGeminiPrompt: showGeminiPrompt,
           emailPrefix: emailPrefix,
@@ -117,17 +118,19 @@ class _HomeScreenState extends State<HomeScreen> {
             showGeminiPrompt(-1);
           },
           backgroundColor: Color(0xFF1a1a1a),
-          child: Icon(Icons.chat, color: Colors.white),
+          child: Icon(Icons.add, color:Theme.of(context).iconTheme.color),
         ),
       bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 
   Widget _buildBottomNavigationBar(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      backgroundColor: Colors.white,
-      selectedItemColor: Color(0xFF1A1A1A),
+      backgroundColor: theme.scaffoldBackgroundColor, // or theme.canvasColor
+      selectedItemColor: theme.primaryColor,
       unselectedItemColor: Colors.grey,
       items: const [
         BottomNavigationBarItem(
@@ -146,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+
 }
 
 
