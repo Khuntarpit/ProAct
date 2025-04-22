@@ -10,7 +10,7 @@ import 'package:proact/network/network_exceptions.dart';
 class NetworkApiServices {
   Future postAIPromptApi(String prompt) async {
     Map<String, dynamic> jsonObject = {
-      'model': 'qwen/qwq-32b:free',
+      'model': 'nvidia/llama-3.1-nemotron-70b-instruct:free',
       'messages': [
         {'role': 'user', "content": prompt}
       ]
@@ -30,7 +30,7 @@ class NetworkApiServices {
               "Content-Type": "application/json",
               "Accept": "application/json",
               "Authorization":
-                  "Bearer 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"
+                  "Bearer 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"
             },
             body: data,
           )
