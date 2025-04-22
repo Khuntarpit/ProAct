@@ -28,7 +28,6 @@ class NetworkApiServices {
             Uri.parse("https://openrouter.ai/api/v1/chat/completions"),
             headers: {
               "Content-Type": "application/json",
-              "Accept": "application/json",
               "Authorization":
                   "Bearer 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"
             },
