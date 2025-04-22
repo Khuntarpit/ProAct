@@ -5,7 +5,29 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:html/parser.dart';
+import 'dart:developer' as d;
 
+///  this file contains all constant value that are used in other app.
+///  it helps to centralize all constant values.
+
+const DEBUG = true;
+const InDevelopment = true;
+const SupabaseUrl = "https://qtljgttwigasqvkzeqxf.supabase.co";
+const SupabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0bGpndHR3aWdhc3F2a3plcXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTk5OTQ1NzUsImV4cCI6MjAzNTU3MDU3NX0.hcbOVDajJSmn7EdisH2eBeLpxOww3sSG7PVxoEsOdeU";
+const SidePaddingPage = 15.0;
+
+
+void printLog(String val){
+  if(DEBUG) d.log(val);
+}
+
+void printErrorLog(String val) {
+  if (DEBUG) d.log(val);
+}
+
+bool checkResponse(int? code){
+  return (code == 200 || code == 201) ? true : false;
+}
 extension CapExtension on String {
   String get inCaps =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1)}' : '';
@@ -18,7 +40,7 @@ extension CapExtension on String {
 extension EmailValidator on String {
   bool isValidEmail() {
     return RegExp(
-            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(this);
   }
 }
@@ -233,9 +255,9 @@ class MyFont {
 
   TextStyle subtitle(
       {double fontsize = 16,
-      FontWeight fontweight = FontWeight.w700,
-      double? latterSpace,
-      Color? color}) {
+        FontWeight fontweight = FontWeight.w700,
+        double? latterSpace,
+        Color? color}) {
     return GoogleFonts.epilogue(
       textStyle: TextStyle(
         color: color ?? Colors.white.withOpacity(0.90),
@@ -250,9 +272,9 @@ class MyFont {
 
   TextStyle normaltext(
       {double fontsize = 14,
-      FontWeight fontweight = FontWeight.w400,
-      double? latterSpace,
-      Color? color}) {
+        FontWeight fontweight = FontWeight.w400,
+        double? latterSpace,
+        Color? color}) {
     return GoogleFonts.epilogue(
       textStyle: TextStyle(
         color: color ?? Colors.white.withOpacity(0.90),
