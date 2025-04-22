@@ -177,7 +177,6 @@ class _GeminiPromptState extends State<GeminiPrompt> {
       // promptWithMessage += 'Busy Timings: ${usedTimings.join(', ')}';
 
       promptWithMessage += ' \nUse This Format:\n'
-          'No Of Tasks = (x)\n'
           'Task 1) # (NAME OF TASK) # START TIME - END TIME\n'
           'Do not use any bullet points or anything extra as this response will be decoded by a program that only accepts responses in the provided format.\n' +
           'Use 24-hour format for the time.\n' +

@@ -10,7 +10,7 @@ import 'package:proact/network/network_exceptions.dart';
 class NetworkApiServices {
   Future postAIPromptApi(String prompt) async {
     Map<String, dynamic> jsonObject = {
-      'model': 'qwen/qwq-32b:free',
+      'model': 'meta-llama/llama-3-8b-instruct',
       'messages': [
         {'role': 'user', "content": prompt}
       ]
@@ -28,9 +28,8 @@ class NetworkApiServices {
             Uri.parse("https://openrouter.ai/api/v1/chat/completions"),
             headers: {
               "Content-Type": "application/json",
-              "Accept": "application/json",
               "Authorization":
-                  "Bearer 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"
+                  "Bearer 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"
             },
             body: data,
           )
