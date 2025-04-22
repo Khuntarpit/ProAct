@@ -29,7 +29,7 @@ class NetworkApiServices {
             headers: {
               "Content-Type": "application/json",
               "Authorization":
-                  "Bearer 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"
+                  "Bearer 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"
             },
             body: data,
           )
