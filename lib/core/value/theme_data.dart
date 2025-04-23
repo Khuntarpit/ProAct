@@ -11,7 +11,7 @@ class AppTheme {
     //----------Scaffold Background----------//
     scaffoldBackgroundColor: AppColors.kWhite,
     //----------Icon Theme----------//
-    iconTheme: IconThemeData(color: AppColors.kPrimaryColor, size: 20.sp),
+    iconTheme: IconThemeData(color: AppColors.kNeutral100Color, size: 20.sp),
 
     primaryColor: AppColors.kPrimaryColor,
     //---------AppBar's Theme---------//
@@ -23,7 +23,7 @@ class AppTheme {
             fontWeight: FontWeight.w700,
             color: AppColors.kNeutral100Color),
         actionsIconTheme:
-        IconThemeData(color: AppColors.kNeutral90Color, size: 24.sp)),
+        IconThemeData(color: AppColors.kNeutral100Color, size: 24.sp)),
 
     //---------Floating Action Button's Theme---------//
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -117,7 +117,7 @@ class AppTheme {
     //----------Scaffold Background----------//
     scaffoldBackgroundColor: AppColors.kNeutral100Color,
     //----------Icon Theme----------//
-    iconTheme: IconThemeData(color: AppColors.kPrimaryColor, size: 20.sp),
+    iconTheme: IconThemeData(color: AppColors.kNeutral10Color, size: 20.sp),
 
     //----------PopupMenu Theme----------//
     popupMenuTheme: PopupMenuThemeData(color: AppColors.kNeutral100Color,),
