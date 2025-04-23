@@ -307,6 +307,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
        // Set background color to white
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Expanded(
             child: SingleChildScrollView(
@@ -347,11 +348,12 @@ class _GeminiPromptState extends State<GeminiPrompt> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10.0),
-                topRight: Radius.circular(10.0),
-              ),
+              // color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(10)
+              // BorderRadius.only(
+              //   topLeft: Radius.circular(10.0),
+              //   topRight: Radius.circular(10.0),
+              // ),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -361,6 +363,14 @@ class _GeminiPromptState extends State<GeminiPrompt> {
                     controller: _controller,
                     decoration: InputDecoration(
                       border: InputBorder.none,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.black,width: 3),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.black,width: 3),
+                      ),
                       hintText: 'Enter Your Tasks',
                     ),
                   ),

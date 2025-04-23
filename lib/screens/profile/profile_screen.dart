@@ -99,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             leading: Icon(Icons.brightness_6, color: Theme.of(context).iconTheme.color),
             title: Text(
               'App Appearance',
-              style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+              style: TextStyle(fontSize: 20,color: Theme.of(context).textTheme.bodyLarge?.color),
             ),
             trailing: CupertinoSwitch(
               value: controller.isDarkMode.value,
@@ -150,8 +150,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       children: [
         ListTile(
+
           leading: Icon(icon, color: Theme.of(context).iconTheme.color),
-          title: Text(title, style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+          title: Text(title, style: TextStyle(fontSize:20,color: Theme.of(context).textTheme.bodyLarge?.color)),
           trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
           onTap: onTap,
         ),

@@ -35,7 +35,6 @@ dependencies:
   supabase: ^2.6.3
   shared_preferences: ^2.5.3
   flutter_gemini: ^3.0.0
-  table_calendar: ^3.2.0
   font_awesome_flutter: ^10.8.0
   flutter_local_notifications: ^19.0.0
   timezone: ^0.10.0
@@ -55,8 +54,10 @@ dependencies:
   lottie: ^3.1.0
   html: ^0.15.0
   hive_flutter: ^2.0.0-dev
-  intl: ^0.20.2
+  intl:
   flutter_easyloading: ^3.0.5
+  easy_date_timeline: ^2.0.6
+  percent_indicator:
   
 
 dev_dependencies:

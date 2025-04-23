@@ -3,6 +3,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:proact/blockapps/services/init.dart';
+import 'package:proact/controller/theme_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'constants/constants.dart';
@@ -41,19 +42,17 @@ class ProAct extends StatefulWidget {
 }
 
 class _ProActState extends State<ProAct> {
+  ThemeController themeController = Get.put(ThemeController());
   @override
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType) {
       return GetMaterialApp(
         title: 'ProAct',
-        // theme: ThemeData(
-        //   primarySwatch: Colors.blue,
-        //   scaffoldBackgroundColor: Color(0xFF1A1A1A), // Set background color to hex #1a1a1a
-        // ),
+
         // builder: EasyLoading.init(
         //   builder: (context, child) => child!,
         // ),
-        themeMode: ThemeMode.dark,
+        themeMode: themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         getPages: Screens.routes,

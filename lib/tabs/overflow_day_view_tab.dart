@@ -3,21 +3,23 @@ import 'dart:collection';
 import 'package:calendar_day_view/calendar_day_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:get/get.dart';
+import 'package:proact/screens/home/controller/home_controller.dart';
 
 final now = DateTime.now();
 
 class OverflowDayViewTab extends HookWidget {
   const OverflowDayViewTab({
     Key? key,
-    required this.events,
     this.onTimeTap,
   }) : super(key: key);
 
-  final List<DayEvent<String>> events;
   final Function(DateTime)? onTimeTap;
 
   @override
   Widget build(BuildContext context) {
+    final HomeController controller = Get.find();
+
     final timeGap = useState<int>(60);
     final renderAsList = useState<bool>(true);
     final cropBottomEvents = useState<bool>(true);
@@ -29,7 +31,7 @@ class OverflowDayViewTab extends HookWidget {
           child: CalendarDayView.overflow(
             onTimeTap: onTimeTap ?? print,
             timeTextStyle: TextStyle(color: Theme.of(context).primaryColor, fontSize: 14),
-            events: UnmodifiableListView(events),
+            events: UnmodifiableListView(controller.parsedDayEvents),
             dividerColor: Colors.grey,
             currentDate: DateTime.now(),
             timeGap: timeGap.value,
