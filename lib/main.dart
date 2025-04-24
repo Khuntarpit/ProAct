@@ -47,11 +47,10 @@ class _ProActState extends State<ProAct> {
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType) {
       return GetMaterialApp(
-        title: 'ProAct',
-
-        // builder: EasyLoading.init(
-        //   builder: (context, child) => child!,
-        // ),
+        title: 'ProAct+',
+        builder: EasyLoading.init(
+          builder: (context, child) => child!,
+        ),
         themeMode: themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

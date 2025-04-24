@@ -59,7 +59,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
       var response = await httpService.postRequest(AppUrls.gemini_url,showLoading: true,closeLoading: true,rowData: {
         "contents": [
           {
-            "parts": [{promptWithMessage}]
+            "parts": [{"text" : promptWithMessage}]
           }
         ]
       });
@@ -184,7 +184,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
       var response = await httpService.postRequest(AppUrls.gemini_url,showLoading: true,closeLoading: true,rowData: {
         "contents": [
           {
-            "parts": [{promptWithMessage}]
+            "parts": [{"text" : promptWithMessage}]
           }
         ]
       });

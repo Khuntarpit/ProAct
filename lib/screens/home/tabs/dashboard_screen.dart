@@ -37,7 +37,7 @@ class DashboardScreen extends StatelessWidget {
             Text(
               'Hi, ${HiveStoreUtil.getString(HiveStoreUtil.emailKey)}',
               style: GoogleFonts.poppins(
-                fontSize: 24,
+                fontSize: 13,
                 fontWeight: FontWeight.bold,
               ),
             ),

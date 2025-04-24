@@ -58,9 +58,9 @@ class HttpService {
 // http post request
   Future postRequest(String url,{rowData = const {},bool useAuthorization = true,bool showLoading = false,closeLoading = false,}) async{
     _dio.options.headers['content-Type'] = 'application/json';
-    if(useAuthorization) {
-      _dio.options.headers['Authorization'] = "user ${HiveStoreUtil.getString(HiveStoreUtil.accessTokenKey)}";
-    }
+    // if(useAuthorization) {
+    //   _dio.options.headers['Authorization'] = "user ${HiveStoreUtil.getString(HiveStoreUtil.accessTokenKey)}";
+    // }
     if(showLoading) Utils.showLoading();
     Response response;
 
