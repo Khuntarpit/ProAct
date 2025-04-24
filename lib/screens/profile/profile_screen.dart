@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:proact/controller/theme_controller.dart';
+import 'package:proact/routes/routes.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -83,17 +85,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildTile(
             icon: Icons.person,
             title: 'My Profile',
-            onTap: () {},
+            onTap: () => Get.toNamed(Routes.editProfileScreen),
           ),
           _buildTile(
             icon: Icons.notifications,
             title: 'Notifications',
-            onTap: () {},
+            onTap:() {
+            },
           ),
           _buildTile(
             icon: Icons.lock,
             title: 'Change Password',
-            onTap: () {},
+            onTap:  () => Get.toNamed(Routes.changePasswordScreen),
           ),
           Obx(() => ListTile(
             leading: Icon(Icons.brightness_6, color: Theme.of(context).iconTheme.color),
@@ -102,6 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextStyle(fontSize: 20,color: Theme.of(context).textTheme.bodyLarge?.color),
             ),
             trailing: CupertinoSwitch(
+              activeColor: Colors.grey,
               value: controller.isDarkMode.value,
               onChanged: controller.toggleTheme,
             ),
@@ -111,10 +115,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: const Divider(color: Colors.grey,thickness: 0.2,),
           ),
 
-
           _buildTile(
-            icon: Icons.help,
-            title: 'Help & Support',
+            icon: Icons.share,
+            title: 'Share App',
+            onTap: ()  {
+                Share.share(
+                  'Check out this amazing app: https://play.google.com/store/apps/details?id=com.example.myapp',
+                  subject: 'Awesome App',
+                );
+
+            },
+          ),
+          _buildTile(
+            icon: Icons.star_rate,
+            title: 'Rate us',
             onTap: () {},
           ),
         ],
@@ -123,13 +137,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(20.0),
         child: ElevatedButton.icon(
           onPressed: () {
-            // Handle your logout logic here
-            print("Logging out...");
+            showLogoutBottomSheet(context);
           },
           icon: Icon(Icons.logout, color: Colors.white),
           label: Text(
             'Log Out',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600,fontSize: 20),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.black,
@@ -150,7 +163,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       children: [
         ListTile(
-
           leading: Icon(icon, color: Theme.of(context).iconTheme.color),
           title: Text(title, style: TextStyle(fontSize:20,color: Theme.of(context).textTheme.bodyLarge?.color)),
           trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
@@ -163,4 +175,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
+  void showLogoutBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      showDragHandle: true,
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Log out',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+              const Divider(color: Colors.grey),
+              const SizedBox(height: 10),
+              const Text(
+                'Are you sure you want to log out?',
+                style: TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.grey),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        child:  Text('Cancel',style: TextStyle(color: Theme.of(context).textTheme.headlineMedium!.color),),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          // Handle actual logout logic here
+                        },
+                        child: const Text(
+                          'LOG OUT',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
 } 

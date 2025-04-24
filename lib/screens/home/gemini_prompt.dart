@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:proact/constants/constants.dart';
 import 'package:proact/notification_service.dart';
+import 'package:proact/screens/home/controller/home_controller.dart';
 import 'package:proact/services/http_service.dart';
 import 'package:proact/utils/app_urls.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -269,6 +270,8 @@ class _GeminiPromptState extends State<GeminiPrompt> {
     return eventData;
   }
 
+  HomeController homeController = Get.put(HomeController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -328,16 +331,17 @@ class _GeminiPromptState extends State<GeminiPrompt> {
               children: [
                 Expanded(
                   child: TextField(
+                    style: TextStyle(fontSize: 18),
                     controller: _controller,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.black,width: 3),
+                        borderSide: BorderSide(color: Colors.black,width: 2),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.black,width: 3),
+                        borderSide: BorderSide(color: Colors.black,width: 1),
                       ),
                       hintText: 'Enter Your Tasks',
                     ),
@@ -357,8 +361,11 @@ class _GeminiPromptState extends State<GeminiPrompt> {
                       if (_controller.text.isNotEmpty) {
                         if (widget.eventId >= 0) {
                           _submitEventPromptToGemini(_controller.text);
+                          homeController.loadEventData();
                         } else {
                           _submitCreateEventPromptToGemini(_controller.text);
+                          homeController.loadEventData();
+
                         }
                       }
                     },

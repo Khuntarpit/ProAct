@@ -8,6 +8,7 @@ import 'package:proact/blockapps/executables/controllers/method_channel_controll
 import '../gemini_prompt.dart';
 
 class HomeController extends GetxController {
+  final Rx<DateTime> selectedDate = DateTime.now().obs;
   RxString userEmail = ''.obs;
   RxString emailPrefix = ''.obs;
   RxList<Map<String, String>> eventData = <Map<String, String>>[].obs;

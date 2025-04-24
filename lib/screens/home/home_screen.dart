@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
           : EventCalenderNew(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => controller.showGeminiPrompt(context, -1),
-        backgroundColor: const Color(0xFF1a1a1a),
+        backgroundColor: const Color(0xFF000000),
         child: Icon(Icons.add, color: Colors.white),
       ),
       bottomNavigationBar: BottomNavigationBar(

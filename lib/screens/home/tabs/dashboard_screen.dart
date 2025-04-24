@@ -5,12 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:proact/blockapps/screens/home.dart';
 import 'package:proact/routes/routes.dart';
 import 'package:proact/screens/home/controller/home_controller.dart';
-import 'package:proact/screens/home/tabs/event_calender_new.dart';
 import 'package:proact/notification_service.dart';
 import 'package:proact/screens/home/tabs/widgets/task_chart.dart';
 import 'package:proact/utils/hive_store_util.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/value/app_colors.dart';
 import '../controller/dashbord_controller.dart';
 import 'widgets/event_card.dart';
 class DashboardScreen extends StatelessWidget {
@@ -29,9 +28,11 @@ class DashboardScreen extends StatelessWidget {
           children: [
             InkWell(
               onTap: () => Get.toNamed(Routes.profileScreen),
-              child: CircleAvatar(
-                child: Icon(Icons.person, color: Colors.black),
-                backgroundColor: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: CircleAvatar(
+                 backgroundImage: NetworkImage("https://c1.35photo.pro/profile/photos/192/963119_140.jpg"),
+                ),
               ),
             ),
             Text(
@@ -60,69 +61,78 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Container(
-              padding: EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Obx(() {
-                    String weekStatus = controller.eventData.length < 4
-                        ? 'You Have a Pretty Light Day'
-                        : 'You Have a Pretty Busy Day';
-                    return Text(
-                      weekStatus,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    );
-                  }),
-                  SizedBox(height: 15),
-                  Row(
-                    children: [
-                      Icon(Icons.work, color: Colors.white, size: 16),
-                      SizedBox(width: 4),
-                      Obx(() => Text(
-                        '${controller.eventData.length} tasks',
-                        style: TextStyle(color: Colors.white),
-                      )),
-                      SizedBox(width: 20),
-
-                    ],
-                  ),
-                  TaskChartRow(
-                    totalTask: 10,
-                    completedTask: 1,
-                  ),
-                  SizedBox(height: 8),
-                ],
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10),
+              child: Container(
+                padding: EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color:Theme.of(context).iconTheme.color == AppColors.kblack
+                          ?Colors.grey.withOpacity(0.4)
+                          :Colors.black.withOpacity(0.5),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    )
+                  ],
+                  color: Theme.of(context).iconTheme.color == AppColors.kblack ? Colors.white :Colors.black,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Obx(() {
+                      String weekStatus = controller.eventData.length < 4
+                          ? 'You Have a Pretty Light Day'
+                          : 'You Have a Pretty Busy Day';
+                      return Text(
+                        weekStatus,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
+                    }),
+                    SizedBox(height: 15),
+                    Row(
+                      children: [
+                        Icon(Icons.work, size: 16),
+                        SizedBox(width: 4),
+                        Obx(() => Text(
+                          '${controller.eventData.length} tasks',
+                        )),
+                        SizedBox(width: 20),
+        
+                      ],
+                    ),
+                    TaskChartRow(
+                      totalTask: 10,
+                      completedTask: 1,
+                    ),
+                    SizedBox(height: 8),
+                  ],
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-            child: Text(
-              'List Of Tasks',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Text(
+                'List Of Tasks',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: Obx(() {
+            Obx(() {
               return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 itemCount: controller.eventData.length,
                 itemBuilder: (context, index) {
                   return EventCard(
@@ -192,91 +202,101 @@ class DashboardScreen extends StatelessWidget {
                                 ),
                               ),
                             ],
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Task Name",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextField(
-                                  controller: taskNameController,
-                                  decoration: InputDecoration(hintText: "Task Name"),
-                                ),
-                                SizedBox(height: 20),
-                                Text(
-                                  "Start Time",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                IconButton(
-                                  onPressed: () async {
-                                    List startTime = event["startTime"]!.split(":");
-                                    int startHour = int.parse(startTime[0]);
-                                    int startMin = int.parse(startTime[1]);
-                                    TimeOfDay? timePicked = await showTimePicker(
-                                      context: context,
-                                      initialEntryMode: TimePickerEntryMode.dial,
-                                      initialTime: TimeOfDay(hour: startHour, minute: startMin),
-                                    );
-                                    if (timePicked != null) {
-                                      String pickedHour =
-                                      timePicked.hour > 9 ? "${timePicked.hour}" : "0${timePicked.hour}";
-                                      String pickedMin =
-                                      timePicked.minute > 9 ? "${timePicked.minute}" : "0${timePicked.minute}";
-                                      controller.saveEvent(index, {
-                                        'startTime': "$pickedHour:$pickedMin",
-                                      });
-                                    }
-                                  },
-                                  icon: Icon(Icons.punch_clock),
-                                ),
-                                TextField(
-                                  controller: txtStartTimeController,
-                                  readOnly: true,
-                                ),
-                                SizedBox(height: 20),
-                                Text(
-                                  "End Time",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                IconButton(
-                                  onPressed: () async {
-                                    List endTime = event["endTime"]!.split(":");
-                                    int endHour = int.parse(endTime[0]);
-                                    int endMin = int.parse(endTime[1]);
-                                    TimeOfDay? timePicked = await showTimePicker(
-                                      context: context,
-                                      initialEntryMode: TimePickerEntryMode.dial,
-                                      initialTime: TimeOfDay(hour: endHour, minute: endMin),
-                                    );
-                                    if (timePicked != null) {
-                                      String pickedHour =
-                                      timePicked.hour > 9 ? "${timePicked.hour}" : "0${timePicked.hour}";
-                                      String pickedMin =
-                                      timePicked.minute > 9 ? "${timePicked.minute}" : "0${timePicked.minute}";
-                                      controller.saveEvent(index, {
-                                        'endTime': "$pickedHour:$pickedMin",
-                                      });
-                                    }
-                                  },
-                                  icon: Icon(Icons.punch_clock),
-                                ),
-                                TextField(
-                                  controller: txtEndTimeController,
-                                  readOnly: true,
-                                ),
-                              ],
+                            content: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Task Name",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 20),
+                                  TextField(
+                                    style: TextStyle(fontSize: 16),
+                                    controller: taskNameController,
+                                    decoration: InputDecoration(
+                                      hintStyle: TextStyle(fontSize: 15),
+                                        hintText: "Task Name"
+                                    ),
+                                  ),
+                                  SizedBox(height: 20),
+                                  Text(
+                                    "Start Time",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 20),
+
+                                  TextField(
+                                    onTap: () async {
+                                      List startTime = event["startTime"]!.split(":");
+                                      int startHour = int.parse(startTime[0]);
+                                      int startMin = int.parse(startTime[1]);
+                                      TimeOfDay? timePicked = await showTimePicker(
+                                        context: context,
+                                        initialEntryMode: TimePickerEntryMode.dial,
+                                        initialTime: TimeOfDay(hour: startHour, minute: startMin),
+                                      );
+                                      if (timePicked != null) {
+                                        String pickedHour =
+                                        timePicked.hour > 9 ? "${timePicked.hour}" : "0${timePicked.hour}";
+                                        String pickedMin =
+                                        timePicked.minute > 9 ? "${timePicked.minute}" : "0${timePicked.minute}";
+                                        controller.saveEvent(index, {
+                                          'startTime': "$pickedHour:$pickedMin",
+                                        });
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                      hintStyle: TextStyle(fontSize: 15),
+                                    ),
+                                    style: TextStyle(fontSize: 16),
+                                    controller: txtStartTimeController,
+                                    readOnly: true,
+                                  ),
+                                  SizedBox(height: 20),
+                                  Text(
+                                    "End Time",
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(height: 20),
+
+                                  TextField(
+                                    onTap: () async {
+                                      List endTime = event["endTime"]!.split(":");
+                                      int endHour = int.parse(endTime[0]);
+                                      int endMin = int.parse(endTime[1]);
+                                      TimeOfDay? timePicked = await showTimePicker(
+                                        context: context,
+                                        initialEntryMode: TimePickerEntryMode.dial,
+                                        initialTime: TimeOfDay(hour: endHour, minute: endMin),
+                                      );
+                                      if (timePicked != null) {
+                                        String pickedHour =
+                                        timePicked.hour > 9 ? "${timePicked.hour}" : "0${timePicked.hour}";
+                                        String pickedMin =
+                                        timePicked.minute > 9 ? "${timePicked.minute}" : "0${timePicked.minute}";
+                                        controller.saveEvent(index, {
+                                          'endTime': "$pickedHour:$pickedMin",
+                                        });
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                      hintStyle: TextStyle(fontSize: 15),
+                                    ),
+                                    style: TextStyle(fontSize: 16),
+                                    controller: txtEndTimeController,
+                                    readOnly: true,
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -286,8 +306,8 @@ class DashboardScreen extends StatelessWidget {
                 },
               );
             }),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
