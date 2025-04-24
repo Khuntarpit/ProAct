@@ -58,6 +58,8 @@ dependencies:
   flutter_easyloading: ^3.0.5
   easy_date_timeline: ^2.0.6
   percent_indicator:
+  image_picker: ^1.1.2
+  share_plus: ^11.0.0
   
 
 dev_dependencies:

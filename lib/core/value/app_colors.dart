@@ -37,6 +37,8 @@ abstract class AppColors {
 
   //Other Colors
   static const Color kWhite = kNeutral10Color;
+  static const kblack= Color(0xff000000);
+
 
 }
 

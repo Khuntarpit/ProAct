@@ -7,4 +7,6 @@ class Routes{
   static const signupScreen = '/signup';
   static const resetPasswordScreen = '/reset-password';
   static const profileScreen = '/profile';
+  static const editProfileScreen = '/edit-profile';
+  static const changePasswordScreen = '/change-password';
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'dart:math';
 
+import 'package:proact/core/value/app_colors.dart';
+
 
 class TaskChartRow extends StatelessWidget {
   final int totalTask;
@@ -18,7 +20,7 @@ class TaskChartRow extends StatelessWidget {
     double completionPercent = completedTask / totalTask;
     int pendingTask = totalTask - completedTask;
     return Container(
-      color: Colors.black,
+      color: Theme.of(context).iconTheme.color == AppColors.kblack ? Colors.white :Colors.black,
       height: 200,
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32),
@@ -32,15 +34,15 @@ class TaskChartRow extends StatelessWidget {
             child: Center(
               child: Stack(
                 children: [
-                  _buildHalfLeftChart("Total", totalTask, isLeft: false),
-                  _buildHalfRightChart("Pending", pendingTask, isLeft: false),
+                  _buildHalfLeftChart("Total", totalTask,context, isLeft: false),
+                  _buildHalfRightChart("Pending", pendingTask,context, isLeft: false),
                 ],
               ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: _buildFullChart(completedTask, "Completed", completionPercent),
+            child: _buildFullChart(completedTask, "Completed", completionPercent,context),
           ),
           Padding(
             padding: const EdgeInsets.all(10.0),
@@ -54,14 +56,14 @@ class TaskChartRow extends StatelessWidget {
                       totalTask.toString().padLeft(2, '0'),
                       style: const TextStyle(
                         fontSize: 24,
-                        color: Colors.grey,
+                        
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       "Total\nTask",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.grey,fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
 
                   ],
@@ -73,14 +75,14 @@ class TaskChartRow extends StatelessWidget {
                       pendingTask.toString().padLeft(2, '0'),
                       style: const TextStyle(
                         fontSize: 24,
-                        color: Colors.grey,
+                        
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       "pending\nTask",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.grey,fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
 
                   ],
@@ -93,27 +95,27 @@ class TaskChartRow extends StatelessWidget {
       )
     );
   }
-  Widget _buildHalfLeftChart(String label, int value, {required bool isLeft}) {
+  Widget _buildHalfLeftChart(String label, int value,BuildContext context, {required bool isLeft}  ) {
     return CustomPaint(
       size: const Size(90, 90),
-      painter: HalfCirclePainter(progress: value.toDouble() / totalTask),
+      painter: HalfCirclePainter(progress: value.toDouble() / totalTask,activeColor: Theme.of(context).iconTheme.color ?? Colors.black),
     );
   }
 
-  Widget _buildHalfRightChart(String label, int value, {required bool isLeft}) {
+  Widget _buildHalfRightChart(String label, int value,BuildContext context, {required bool isLeft}) {
     return Transform(
       alignment: Alignment.center,
       transform: Matrix4.rotationY(pi),
       child: Container(
         child: CustomPaint(
           size: const Size(90, 90),
-          painter: HalfCirclePainter(progress: value.toDouble() / totalTask),
+          painter: HalfCirclePainter(progress: value.toDouble() / totalTask,activeColor: Theme.of(context).iconTheme.color ??Colors.black),
         ),
       ),
     );
   }
 
-  Widget _buildFullChart(int value, String label, double percent) {
+  Widget _buildFullChart(int value, String label, double percent, BuildContext context) {
     return Column(
       children: [
         Stack(
@@ -125,7 +127,7 @@ class TaskChartRow extends StatelessWidget {
             ),
             CustomPaint(
               size: const Size(120, 120),
-              painter: FullCircleForegroundPainter(percent),
+              painter: FullCircleForegroundPainter(percent,Theme.of(context).iconTheme.color ?? Colors.black ),
             ),
            Column(
              children: [
@@ -133,14 +135,13 @@ class TaskChartRow extends StatelessWidget {
                  value.toString().padLeft(2, '0'),
                  style: const TextStyle(
                    fontSize: 28,
-                   color: Colors.white,
                    fontWeight: FontWeight.bold,
                  ),
                ),
                Text(
                  "$label\nTask",
                  textAlign: TextAlign.center,
-                 style: const TextStyle(color: Colors.grey,fontSize: 16),
+                 style: const TextStyle(fontSize: 16),
                ),
              ],
            ),
@@ -155,19 +156,20 @@ class TaskChartRow extends StatelessWidget {
 
 class HalfCirclePainter extends CustomPainter {
   final double progress; // From 0 to 1
+   Color activeColor; // From 0 to 1
 
-  HalfCirclePainter({this.progress = 0.85});
+  HalfCirclePainter({this.progress = 0.85,required this.activeColor});
 
   @override
   void paint(Canvas canvas, Size size) {
     final backgroundPaint = Paint()
-      ..color = Colors.grey.shade800
+      ..color = Colors.grey.shade500
       ..strokeWidth = 10
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
     final foregroundPaint = Paint()
-      ..color = Colors.white
+      ..color = activeColor
       ..strokeWidth = 10
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -195,8 +197,8 @@ class FullCircleBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.grey.shade800
-      ..strokeWidth = 12
+      ..color = Colors.grey.shade500
+      ..strokeWidth = 10
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
@@ -212,13 +214,14 @@ class FullCircleBackgroundPainter extends CustomPainter {
 
 class FullCircleForegroundPainter extends CustomPainter {
   final double percent;
-  FullCircleForegroundPainter(this.percent);
+  final Color activeColor;
+  FullCircleForegroundPainter(this.percent,this.activeColor);
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 12
+      ..color = activeColor
+      ..strokeWidth = 10
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 

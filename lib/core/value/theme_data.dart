@@ -11,11 +11,12 @@ class AppTheme {
     //----------Scaffold Background----------//
     scaffoldBackgroundColor: AppColors.kWhite,
     //----------Icon Theme----------//
-    iconTheme: IconThemeData(color: AppColors.kNeutral100Color, size: 20.sp),
+    iconTheme: IconThemeData(color: AppColors.kblack, size: 20.sp),
 
     primaryColor: AppColors.kPrimaryColor,
     //---------AppBar's Theme---------//
     appBarTheme: AppBarTheme(
+        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         elevation: 0,
         titleTextStyle: TextStyle(
@@ -35,11 +36,12 @@ class AppTheme {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       elevation: 0,
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.kPrimaryColor,
+      selectedItemColor: AppColors.kblack,
       unselectedItemColor: AppColors.kNeutral70Color,
       showUnselectedLabels: true,
       selectedLabelStyle: AppTextStyle.kCaption,
       unselectedLabelStyle: AppTextStyle.kCaption,
+      backgroundColor: AppColors.kWhite
     ),
 
     //---------Text field theme---------//
@@ -86,7 +88,7 @@ class AppTheme {
 
     //--------Checkbox theme---------//
     checkboxTheme: CheckboxThemeData(
-      fillColor: WidgetStatePropertyAll(AppColors.kPrimaryColor),
+      fillColor: WidgetStatePropertyAll(AppColors.kWhite),
     ),
 
     textTheme: TextTheme(
@@ -124,6 +126,7 @@ class AppTheme {
 
     //---------AppBar's Theme---------//
     appBarTheme: AppBarTheme(
+      surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
         elevation: 0,
         titleTextStyle: TextStyle(
@@ -142,7 +145,7 @@ class AppTheme {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       elevation: 0,
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.kPrimaryColor,
+      selectedItemColor: AppColors.kWhite,
       unselectedItemColor: AppColors.kNeutral70Color,
       showUnselectedLabels: true,
       selectedLabelStyle: AppTextStyle.kCaption,
@@ -195,7 +198,7 @@ class AppTheme {
 
     //--------Checkbox theme---------//
     checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.all(AppColors.kPrimaryColor),
+      fillColor: MaterialStateProperty.all(AppColors.kblack),
     ),
 
     textTheme: TextTheme(
