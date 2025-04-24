@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
-import 'package:proact/blockapps/screens/home.dart';
-import 'package:proact/screens/home/tabs/event_calender_new.dart';
-import 'package:proact/network/network_api_services.dart';
+import 'package:proact/constants/constants.dart';
 import 'package:proact/notification_service.dart';
+import 'package:proact/services/http_service.dart';
+import 'package:proact/utils/app_urls.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'tabs/dashboard_screen.dart';
@@ -26,6 +25,7 @@ class GeminiPrompt extends StatefulWidget {
 class _GeminiPromptState extends State<GeminiPrompt> {
   final TextEditingController _controller = TextEditingController();
   String _response = '';
+  HttpService httpService = HttpService();
 
   Future<void> _submitEventPromptToGemini(String prompt) async {
     try {
@@ -56,21 +56,15 @@ class _GeminiPromptState extends State<GeminiPrompt> {
 
       print("prompt message ${promptWithMessage}");
 
-      final newresponse =
-      await NetworkApiServices().postAIPromptApi(promptWithMessage);
-
-      // print("gemini:* " + response!.output! + " ***");
-      print("llama # " +
-          newresponse["choices"][0]["message"]["content"] +
-          " ###");
-      if (newresponse != null &&
-          newresponse["choices"] != null &&
-          newresponse["choices"].length > 0 &&
-          newresponse["choices"][0]["message"] != null &&
-          newresponse["choices"][0]["message"]["content"] != null) {
-        // setState(() {
-        String response = newresponse["choices"][0]["message"]["content"] ??
-            'No response received'; // Display AI response
+      var response = await httpService.postRequest(AppUrls.gemini_url,showLoading: true,closeLoading: true,rowData: {
+        "contents": [
+          {
+            "parts": [{promptWithMessage}]
+          }
+        ]
+      });
+      if(checkResponse(response.statusCode)){
+        List parts = response.data["candidates"][0]["content"]["parts"] ?? []; // Display AI response
         print("response from ai ${response}");
         _controller.clear(); // Clear the text field after submission
         // });
@@ -103,7 +97,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     child: Text(
-                      response,
+                      parts.isEmpty ? "No response" : parts.first['text'],
                       textAlign: TextAlign.justify,
                       style: TextStyle(
                           color: Colors.black,
@@ -115,6 +109,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
               );
             });
       }
+
     } catch (e) {
       print('Error sending prompt to AI: $e');
       // Handle error scenario, such as showing a snackbar
@@ -176,8 +171,9 @@ class _GeminiPromptState extends State<GeminiPrompt> {
 
       // promptWithMessage += 'Busy Timings: ${usedTimings.join(', ')}';
 
-      promptWithMessage += ' \nUse This Format:\n'
-          'Task 1) # (NAME OF TASK) # START TIME - END TIME\n'
+      promptWithMessage += ' \nUse This Format:'
+          'Task 1) # (NAME OF TASK) # START TIME - END TIME'+
+          'Task 2) # (NAME OF TASK) # START TIME - END TIME'+
           'Do not use any bullet points or anything extra as this response will be decoded by a program that only accepts responses in the provided format.\n' +
           'Use 24-hour format for the time.\n' +
           '*MAKE SURE TO INCLUDE THE # OR ELSE THE RESPONSE WONT BE DECODED*\n' +
@@ -185,53 +181,25 @@ class _GeminiPromptState extends State<GeminiPrompt> {
           '*DONT WRITE ANYTHING EXTRA THATS NOT IN THE FORMAT AND RESPOND IN 24HR FORMAT .**\n';
 
       print("prompt message ${promptWithMessage}");
-
-      // String tmpPromptMsg =
-      //     "Code for two hours and lunch for for half-hour that avoids the time slots 18:00 - 19:00, 19:30 - 20:30\n" +
-      //         "Use This Format:\n" +
-      //         "No Of Tasks = (x)\n" +
-      //         "Task 1) # (NAME OF TASK) # START TIME - END TIME\n" +
-      //         "Do not use any bullet points or anything extra as this response will be decoded by a program that only accepts responses in the provided format.\n" +
-      //         "Use 24-hour format for the time.\n" +
-      //         "*MAKE SURE TO INCLUDE THE # OR ELSE THE RESPONSE WONT BE DECODED*\n" +
-      //         "*MAKE SURE YOU GIVE THE START TIME FROM THE **NEXT PERFECT HOUR AFTER (18:18)*.\n" +
-      //         "*AVOID THE TIME SLOTS 18:00 - 19:00, 19:30 - 20:30\n*"
-      //             "*DONT WRITE ANYTHING EXTRA THATS NOT IN THE FORMAT AND RESPOND IN 24HR FORMAT .**";
-
-      // print(tmpPromptMsg);
-
-      // Send prompt to Gemini and receive response
-      // final Candidates? response = await gemini.text(promptWithMessage);
-
-      final newresponse =
-      await NetworkApiServices().postAIPromptApi(promptWithMessage);
-
-      // print("gemini:* " + response!.output! + " ***");
-      print("llama # " +
-          newresponse["choices"][0]["message"]["content"] +
-          " ###");
-      if (newresponse != null &&
-          newresponse["choices"] != null &&
-          newresponse["choices"].length > 0 &&
-          newresponse["choices"][0]["message"] != null &&
-          newresponse["choices"][0]["message"]["content"] != null) {
+      var response = await httpService.postRequest(AppUrls.gemini_url,showLoading: true,closeLoading: true,rowData: {
+        "contents": [
+          {
+            "parts": [{promptWithMessage}]
+          }
+        ]
+      });
+      if(checkResponse(response.statusCode)) {
+        List parts = response.data["candidates"][0]["content"]["parts"] ?? []; // Display AI response
+        String responseText = parts.isEmpty ? "No response received" : parts.first['text'];
         setState(() {
-          _response = newresponse["choices"][0]["message"]["content"] ??
-              'No response received'; // Display AI response
+          _response = responseText; // Display AI response
           _controller.clear(); // Clear the text field after submission
         });
 
         // Parse response into a list of event data
-        List<Map<String, String>> parsedEventData = _parseEventData(
-            newresponse["choices"][0]["message"]["content"], events.length);
+        List<Map<String, String>> parsedEventData = _parseEventData(responseText, events.length);
         widget.onSubmit(
             parsedEventData); // Pass parsed data back to parent widget
-      } else {
-        setState(() {
-          _response = 'No response received'; // Display NO response
-          _controller.clear(); // Clear the text field after submission
-        });
-        return;
       }
     } catch (e) {
       print('Error sending prompt to AI: $e');

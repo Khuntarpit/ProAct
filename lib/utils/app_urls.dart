@@ -1,0 +1,12 @@
+import '../constants/constants.dart';
+
+
+///  this class contains App Urls.
+///  it helps to centralize all the urls.
+///
+class AppUrls {
+  static String gemini_url =  "/gemini-2.0-flash:generateContent?key=${GeminiApiKey}";
+  static String base_url = InDevelopment ? 'https://generativelanguage.googleapis.com/v1beta/models' : "https://generativelanguage.googleapis.com/v1beta/models";
+
+
+}
