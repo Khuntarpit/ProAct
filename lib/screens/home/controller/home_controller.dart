@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../gemini_prompt.dart';
 
@@ -11,7 +12,7 @@ class HomeController extends GetxController {
   final Rx<DateTime> selectedDate = DateTime.now().obs;
   RxString userEmail = ''.obs;
   RxString emailPrefix = ''.obs;
-  RxList<Map<String, String>> eventData = <Map<String, String>>[].obs;
+  RxList<Map<String, dynamic>> eventData = <Map<String, dynamic>>[].obs;
   RxInt currentIndex = 0.obs;
 
   @override
@@ -30,8 +31,7 @@ class HomeController extends GetxController {
         final height = keyboardOpen
             ? MediaQuery.of(context).size.height * 0.9
             : MediaQuery.of(context).size.height * 0.5;
-
-        return Container(
+        return  Container(
           padding: const EdgeInsets.all(16.0),
           height: height,
           child: GeminiPrompt(
@@ -47,17 +47,35 @@ class HomeController extends GetxController {
   }
 
   Future<void> saveEventData() async {
+    final supabase = Supabase.instance.client;
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String eventDataJson = jsonEncode(eventData);
     await prefs.setString('eventData', eventDataJson);
+
     await Get.find<MethodChannelController>().saveEvents(eventDataJson);
+
+    try {
+      final response = await supabase.from('Tasks').insert(eventData);
+
+      if (response != null && response.error != null) {
+        print('Supabase error: ${response.error!.message}');
+      } else if (response == null) {
+        print('❗ No response received from Supabase.');
+      } else {
+        print('✅ Data saved to Supabase');
+      }
+    } catch (e) {
+      print('❗ Exception saving to Supabase: $e');
+    }
   }
+
 
   Future<void> loadEventData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String eventDataJson = prefs.getString('eventData') ?? '[]';
-    eventData.value = List<Map<String, String>>.from(
-      (jsonDecode(eventDataJson) as List).map((e) => Map<String, String>.from(e)),
+    eventData.value = List<Map<String, dynamic>>.from(
+      (jsonDecode(eventDataJson) as List).map((e) => Map<String, dynamic>.from(e)),
     );
   }
 
@@ -69,17 +87,17 @@ class HomeController extends GetxController {
 
     for (var event in eventData) {
       try {
-        String startTime = event["startTime"] as String;
+        String startTime = event["start_time"] as String;
         var startSplit = startTime.split(":");
         int startHour = int.parse(startSplit[0]);
         int startMinutes = int.parse(startSplit[1].substring(0, 2));
 
-        String endTime = event["endTime"] as String;
+        String endTime = event["end_time"] as String;
         var endSplit = endTime.split(":");
         int endHour = int.parse(endSplit[0]);
         int endMinutes = int.parse(endSplit[1].substring(0, 2));
 
-        String title = event["name"] as String;
+        String title = event["title"] as String;
 
         dayEvents.add(DayEvent<String>(
           start: DateTime(now.year, now.month, now.day, startHour, startMinutes),

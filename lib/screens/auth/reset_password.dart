@@ -43,7 +43,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  style: GoogleFonts.poppins(),
+                  style: GoogleFonts.poppins(fontSize: 14,),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -69,7 +69,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  style: GoogleFonts.poppins(),
+                  style: GoogleFonts.poppins(fontSize: 14,),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -95,7 +95,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  style: GoogleFonts.poppins(),
+                  style: GoogleFonts.poppins(fontSize: 14,),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {

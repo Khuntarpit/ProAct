@@ -12,8 +12,8 @@ import 'dart:developer' as d;
 
 const DEBUG = true;
 const InDevelopment = true;
-const GeminiApiKey = "AIzaSyDO6mc4_4Xi0UmiV_cVgyi8DqkSMpdJ3eE";
-const SupabaseUrl = "https://qtljgttwigasqvkzeqxf.supabase.co";
+const GeminiApiKey = "AIzaSyARy4drPo56uNVuziNbW1MFhPoczH7dgok";
+  const SupabaseUrl = "https://qtljgttwigasqvkzeqxf.supabase.co";
 const SupabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0bGpndHR3aWdhc3F2a3plcXhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTk5OTQ1NzUsImV4cCI6MjAzNTU3MDU3NX0.hcbOVDajJSmn7EdisH2eBeLpxOww3sSG7PVxoEsOdeU";
 const SidePaddingPage = 15.0;
 

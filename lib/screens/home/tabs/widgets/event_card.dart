@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/value/app_colors.dart';
 
 class EventCard extends StatefulWidget {
-  final Map<String, String> event;
+  final Map<String, dynamic> event;
   final Function onDelete;
   final Function onEdit;
   final Function showGeminiPrompt;
@@ -63,7 +63,7 @@ class _EventCardState extends State<EventCard> {
                             Container(
                               width: ((screenWidth - 10) / 2),
                               child: Text(
-                                '${widget.event['name']}' ?? '',
+                                '${widget.event['title']}' ?? '',
                                 softWrap: true,
                                 style: GoogleFonts.poppins(
                                   fontSize: 16,
@@ -78,7 +78,7 @@ class _EventCardState extends State<EventCard> {
                           Icon(Icons.schedule, color: Colors.blueAccent, size: 20),
                           SizedBox(width: 8),
                           Text(
-                            'Start Time: ${widget.event['startTime'] ?? ''}',
+                            'Start Time: ${widget.event['start_time'] ?? ''}',
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                             ),
@@ -90,7 +90,7 @@ class _EventCardState extends State<EventCard> {
                             Icon(Icons.access_time, color: Colors.blueAccent, size: 20),
                             SizedBox(width: 8),
                             Text(
-                              'End Time: ${widget.event['endTime'] ?? ''}',
+                              'End Time: ${widget.event['end_time'] ?? ''}',
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                               ),

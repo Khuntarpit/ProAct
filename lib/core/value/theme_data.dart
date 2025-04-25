@@ -59,7 +59,7 @@ class AppTheme {
         enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
             borderSide:
-            BorderSide(color: AppColors.kNeutral30Color, width: 1.w)),
+            BorderSide(color: AppColors.kNeutral30Color, width: 1)),
 
         //Focus Border
         focusedBorder: OutlineInputBorder(
@@ -67,21 +67,21 @@ class AppTheme {
               Radius.circular(10.0),
             ),
             borderSide:
-            BorderSide(color: AppColors.kNeutral90Color, width: 1.w)),
+            BorderSide(color: AppColors.kNeutral90Color, width: 1)),
 
         //Error Border
         errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(10.0),
             ),
-            borderSide: BorderSide(color: AppColors.kDanger1, width: 1.w)),
+            borderSide: BorderSide(color: AppColors.kDanger1, width: 1)),
 
         //Error Focus Border
         focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(10.0),
             ),
-            borderSide: BorderSide(color: AppColors.kDanger1, width: 1.w)),
+            borderSide: BorderSide(color: AppColors.kDanger1, width: 1)),
 
         //Suffix Icon Color
         suffixIconColor: AppColors.kNeutral80Color),
@@ -166,7 +166,7 @@ class AppTheme {
       enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
           borderSide:
-          BorderSide(color: AppColors.kNeutral30Color, width: 1.w)),
+          BorderSide(color: AppColors.kNeutral30Color, width: 1)),
 
       //Focus Border
       focusedBorder: OutlineInputBorder(
@@ -174,21 +174,21 @@ class AppTheme {
             Radius.circular(10.0),
           ),
           borderSide:
-          BorderSide(color: AppColors.kNeutral60Color, width: 1.w)),
+          BorderSide(color: AppColors.kNeutral60Color, width: 1)),
 
       //Error Border
       errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(10.0),
           ),
-          borderSide: BorderSide(color: AppColors.kDanger1, width: 1.w)),
+          borderSide: BorderSide(color: AppColors.kDanger1, width: 1)),
 
       //Error Focus Border
       focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(10.0),
           ),
-          borderSide: BorderSide(color: AppColors.kDanger1, width: 1.w)),
+          borderSide: BorderSide(color: AppColors.kDanger1, width: 1)),
 
       //Suffix Icon Color
       suffixIconColor: AppColors.kNeutral80Color,
@@ -218,6 +218,7 @@ class AppTheme {
       labelSmall: TextStyle(color: AppColors.kNeutral10Color,),
       titleMedium: TextStyle(color: AppColors.kNeutral10Color,),
     ),
+
     dialogTheme: DialogThemeData(backgroundColor: AppColors.kNeutral100Color,contentTextStyle: TextStyle(color: AppColors.kNeutral10Color,)),
   );
 }

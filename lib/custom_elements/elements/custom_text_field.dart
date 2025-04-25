@@ -158,7 +158,7 @@ class CustomTextField extends StatelessWidget {
                     TextStyle(
                         color: CustomColors.textFiledIconColor,
                         fontWeight: FontWeight.normal,
-                        fontSize: fontSize ?? 15,),
+                        fontSize: fontSize ?? 13,),
               ),
         ),
       ),

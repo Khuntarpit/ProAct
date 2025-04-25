@@ -20,7 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       appBar: AppBar(
         title: Text(
           '',
-          style: GoogleFonts.poppins(), // Poppins font for app bar title
+          style: GoogleFonts.poppins(fontSize: 14,), // Poppins font for app bar title
         ),
         backgroundColor: Colors.white, // Set app bar background color to white
       ),
@@ -66,7 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: GoogleFonts.poppins(),
+                    style: GoogleFonts.poppins(fontSize: 14,),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email address';
@@ -93,7 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    style: GoogleFonts.poppins(),
+                    style: GoogleFonts.poppins(fontSize: 14,),
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {

@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'tabs/dashboard_screen.dart';
 
 class GeminiPrompt extends StatefulWidget {
-  final Function(List<Map<String, String>>) onSubmit;
+  final Function(List<Map<String, dynamic>>) onSubmit;
   final int eventId;
 
   GeminiPrompt({required this.onSubmit, required this.eventId});
@@ -31,19 +31,19 @@ class _GeminiPromptState extends State<GeminiPrompt> {
   Future<void> _submitEventPromptToGemini(String prompt) async {
     try {
       // Define events variable and add event details to the prompt
-      List<Map<String, String>> events =
+      List<Map<String, dynamic>> events =
       []; // Replace with your actual events list
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String eventDataJson = prefs.getString('eventData') ?? '[]';
-      events = List<Map<String, String>>.from(
+      events = List<Map<String, dynamic>>.from(
         (jsonDecode(eventDataJson) as List)
             .map((e) => Map<String, String>.from(e)),
       );
 
       String? startTime =
-      events[widget.eventId]['startTime']; // nullable String
-      String? endTime = events[widget.eventId]['endTime']; // nullable String
+      events[widget.eventId]['Start_time']; // nullable String
+      String? endTime = events[widget.eventId]['end_time']; // nullable String
 
       String promptWithMessage =
           'Imagine you have been given the following task: "' +
@@ -128,14 +128,14 @@ class _GeminiPromptState extends State<GeminiPrompt> {
       String promptWithMessage = prompt;
 
       // Define events variable and add event details to the prompt
-      List<Map<String, String>> events =
+      List<Map<String, dynamic>> events =
       []; // Replace with your actual events list
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String eventDataJson = prefs.getString('eventData') ?? '[]';
-      events = List<Map<String, String>>.from(
+      events = List<Map<String, dynamic>>.from(
         (jsonDecode(eventDataJson) as List)
-            .map((e) => Map<String, String>.from(e)),
+            .map((e) => Map<String, dynamic>.from(e)),
       );
 
       // Create a set to track used timings
@@ -143,8 +143,8 @@ class _GeminiPromptState extends State<GeminiPrompt> {
       String usedTimingsSet = "";
 
       for (int i = 0; i < events.length; i++) {
-        String? startTime = events[i]['startTime']; // nullable String
-        String? endTime = events[i]['endTime']; // nullable String
+        String? startTime = events[i]['start_time']; // nullable String
+        String? endTime = events[i]['end_time']; // nullable String
 
         // Ensure startTime and endTime are not null before using them
         if (startTime != null && endTime != null) {
@@ -198,7 +198,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
         });
 
         // Parse response into a list of event data
-        List<Map<String, String>> parsedEventData = _parseEventData(responseText, events.length);
+        List<Map<String, dynamic>> parsedEventData = _parseEventData(responseText, events.length);
         widget.onSubmit(
             parsedEventData); // Pass parsed data back to parent widget
       }
@@ -208,9 +208,9 @@ class _GeminiPromptState extends State<GeminiPrompt> {
     }
   }
 
-  List<Map<String, String>> _parseEventData(
+  List<Map<String, dynamic>> _parseEventData(
       String? response, int prevEventCount) {
-    List<Map<String, String>> eventData = [];
+    List<Map<String, dynamic>> eventData = [];
 
     if (response != null && response.isNotEmpty) {
       List<String> lines = response.split('\n');
@@ -255,11 +255,10 @@ class _GeminiPromptState extends State<GeminiPrompt> {
                   startDateTime.hour,
                   startDateTime.minute);
               eventData.add({
-                'name': name,
-                'startTime': startTime,
-                'endTime': endTime,
-                'currenttimeinmillis': '${now.millisecondsSinceEpoch}',
-                'donesStatus': 'false'
+                'title': name,
+                'start_time': startTime,
+                'end_time': endTime,
+                'status': 0
               });
             }
           }

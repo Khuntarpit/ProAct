@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardController extends GetxController {
-  var eventData = <Map<String, String>>[].obs;
+  var eventData = <Map<String, dynamic>>[].obs;
   var progressValue = 0.0.obs;
 
   void deleteEvent(int index) {
@@ -30,7 +30,7 @@ class DashboardController extends GetxController {
     progressValue.value = doneCount / total;
   }
 
-  void setEvents(List<Map<String, String>> events) {
+  void setEvents(List<Map<String, dynamic>> events) {
     eventData.assignAll(events);
     updateProgress();
   }
