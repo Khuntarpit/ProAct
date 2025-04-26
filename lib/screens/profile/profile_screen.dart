@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:proact/controller/auth_controller.dart';
 import 'package:proact/controller/theme_controller.dart';
 import 'package:proact/routes/routes.dart';
 import 'package:share_plus/share_plus.dart';
@@ -16,6 +17,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
 
   ThemeController controller = Get.put(ThemeController());
+  AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         onPressed: () {
                           Navigator.pop(context);
-                          // Handle actual logout logic here
+                          authController.logout();
                         },
                         child: const Text(
                           'LOG OUT',

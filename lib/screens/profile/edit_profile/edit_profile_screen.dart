@@ -1,6 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:proact/controller/auth_controller.dart';
+
+import '../../../utils/hive_store_util.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -10,9 +14,31 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // You can now access saved data here
+    String savedFirstName = HiveStoreUtil.getString('first_name') ?? '';
+    String savedLastName = HiveStoreUtil.getString('last_name') ?? '';
+
+    // Now initialize controllers
+    _firstNameController = TextEditingController(text: savedFirstName);
+    _lastNameController = TextEditingController(text: savedLastName);
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    super.dispose();
+  }
+
+
+  AuthController authController = Get.put(AuthController());
 
   File? _image;
 
@@ -37,6 +63,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         Text(title,style: TextStyle(fontSize: 16),),
         SizedBox(height: 10,),
         TextField(
+          style: TextStyle(fontSize: 18),
           controller: controller,
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: Colors.grey),
@@ -111,12 +138,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: _lastNameController,
               ),
               const SizedBox(height: 16),
-              _buildTextField(
-                title: "Email",
-                hintText: 'Your Email',
-                icon: Icons.email,
-                controller: _emailController,
-              ),
+
             ],
           ),
         ),
@@ -132,7 +154,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
             onPressed: () {
-              // handle save
+              authController.editProfile(
+                  firstName: _firstNameController.text.trim().toString(),
+                  lastName: _lastNameController.text.trim().toString(),
+                  photoUrl: "");
             },
             child: Padding(
               padding: const EdgeInsets.all(15.0),

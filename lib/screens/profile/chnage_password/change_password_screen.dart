@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:proact/controller/auth_controller.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({Key? key}) : super(key: key);
@@ -12,13 +14,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  bool _obscureText = true;
+  AuthController controller = Get.put(AuthController());
+
+  bool _currentPasswordObscureText = true;
+  bool _newPasswordObscureText = true;
+  bool _confirmPasswordObscureText = true;
 
   Widget _buildTextField({
+    required bool obscureText,
     required String hintText,
     required String title,
     required IconData icon,
     required TextEditingController controller,
+    required VoidCallback onToggleVisibility,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,20 +34,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         Text(title, style: const TextStyle(fontSize: 16)),
         const SizedBox(height: 10),
         TextField(
+          style: const TextStyle(fontSize: 17),
           controller: controller,
-          obscureText: _obscureText,
+          obscureText: obscureText,
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: Colors.grey),
             suffixIcon: IconButton(
               icon: Icon(
-                _obscureText ? Icons.visibility_off : Icons.visibility,
+                obscureText ? Icons.visibility_off : Icons.visibility,
                 color: Colors.grey,
               ),
-              onPressed: () {
-                setState(() {
-                  _obscureText = !_obscureText;
-                });
-              },
+              onPressed: onToggleVisibility,
             ),
             hintText: hintText,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -70,6 +75,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           child: Column(
             children: [
               _buildTextField(
+                onToggleVisibility: () {
+                  setState(() {
+                    _currentPasswordObscureText = !_currentPasswordObscureText;
+                  });
+                },
+                obscureText: _currentPasswordObscureText,
                 hintText: 'Enter your current password',
                 title: 'Current Password',
                 icon: Icons.lock_outline,
@@ -77,13 +88,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
               const SizedBox(height: 20),
               _buildTextField(
+                onToggleVisibility: () {
+                  setState(() {
+                    _newPasswordObscureText = !_newPasswordObscureText;
+                  });
+                },
+                obscureText: _newPasswordObscureText ,
                 hintText: 'Enter new password',
                 title: 'New Password',
                 icon: Icons.lock,
                 controller: _newPasswordController,
               ),
               const SizedBox(height: 20),
-              _buildTextField(
+              _buildTextField(onToggleVisibility: () {
+                setState(() {
+                  _confirmPasswordObscureText = !_confirmPasswordObscureText;
+
+                });
+              },
+                obscureText: _confirmPasswordObscureText,
                 hintText: 'Confirm new password',
                 title: 'Confirm Password',
                 icon: Icons.lock,
@@ -105,7 +128,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
           ),
           onPressed: () {
-            // Handle password change logic here
+           controller.changePassword(
+               oldPassword: _currentPasswordController.text.trim().toString(),
+               newPassword: _newPasswordController.text.trim().toString()
+           );
           },
           child: Padding(
             padding: const EdgeInsets.all(15.0),

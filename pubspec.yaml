@@ -60,6 +60,8 @@ dependencies:
   percent_indicator:
   image_picker: ^1.1.2
   share_plus: ^11.0.0
+  flutter_svg: ^2.1.0
+
   
 
 dev_dependencies:
@@ -91,6 +93,7 @@ flutter:
 
   assets:
       - assets/images/
+      - assets/icons/
       - assets/jsonFiles/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

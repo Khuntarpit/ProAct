@@ -15,8 +15,8 @@ class DashboardController extends GetxController {
     updateProgress();
   }
 
-  void markEventAsDone(int index, bool done) {
-    eventData[index]['doneStatus'] = done.toString();
+  void markEventAsDone(int index, int done) {
+    eventData[index]['doneStatus'] = done;
     updateProgress();
   }
 

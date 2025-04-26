@@ -58,17 +58,16 @@ class HomeController extends GetxController {
     try {
       final response = await supabase.from('Tasks').insert(eventData);
 
-      if (response != null && response.error != null) {
-        print('Supabase error: ${response.error!.message}');
-      } else if (response == null) {
-        print('❗ No response received from Supabase.');
+      if (response.error != null) {
+        print('❗ Supabase error: ${response.error!.message}');
       } else {
-        print('✅ Data saved to Supabase');
+        print('✅ Data saved to Supabase: ${response.data}');
       }
     } catch (e) {
       print('❗ Exception saving to Supabase: $e');
     }
   }
+
 
 
   Future<void> loadEventData() async {
