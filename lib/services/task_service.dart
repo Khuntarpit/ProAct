@@ -15,6 +15,24 @@ class TasksController extends GetxController {
   static var endTime = "end_time";
   static var status = "status";
 
+  Future<void> updateTaskStatus(int taskId, int newStatus) async {
+    final supabase = Supabase.instance.client;
+
+    try {
+      final response = await supabase
+          .from('Tasks')
+          .update({'status': newStatus})
+          .eq('id', taskId)
+          .select(); // Add this to get updated data back
+
+      print('✅ Task status updated: $response');
+      loadUserTasks();
+      // update();
+    } catch (e) {
+      print('❗ Error updating task status: $e');
+    }
+  }
+
   Future<void> loadUserTasks() async {
     isLoading.value = true;
 

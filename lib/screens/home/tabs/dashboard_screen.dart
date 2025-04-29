@@ -151,6 +151,8 @@ class DashboardScreen extends StatelessWidget {
                   itemCount: taskController.tasksList.length,
                   itemBuilder: (context, index) {
                     return EventCard(
+                      id: taskController.tasksList[index]["id"],
+                      status: taskController.tasksList[index]["status"],
                       index: index,
                       listLength: taskController.tasksList.length,
                       event: taskController.tasksList[index],

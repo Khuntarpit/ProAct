@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:proact/services/task_service.dart';
 
 import '../../../../core/value/app_colors.dart';
 
@@ -10,12 +12,17 @@ class EventCard extends StatefulWidget {
   final Function onEdit;
   final Function showGeminiPrompt;
   final Function markAsDone;
+  final int id;
   final int index;
+  final int status;
+
   final int listLength;
 
   const EventCard(
       {super.key,
+        required this.id,
         required this.index,
+        required this.status,
         required this.listLength,
         required this.event,
         required this.onDelete,
@@ -30,7 +37,7 @@ class EventCard extends StatefulWidget {
 class _EventCardState extends State<EventCard> {
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.sizeOf(context).width;
+    TasksController tasksController = Get.put(TasksController());
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0.0),
       child: Row(
@@ -179,12 +186,10 @@ class _EventCardState extends State<EventCard> {
 
                       GestureDetector(
                         onTap: () {
-                         setState(() {
-                           widget.event['doneStatus'] = widget.event['doneStatus'] == 0 ? 1 : 0;
-                         });
+                          tasksController.updateTaskStatus(widget.id, widget.status == 0 ? 1 : 0);
                         },
                         child: SvgPicture.asset(
-                          widget.event['doneStatus'] == 0 ?
+                          widget.status == 0 ?
                           "assets/icons/grey_check_icon.svg"
                           :"assets/icons/green_check_icon.svg"
                         ),
