@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:proact/controller/auth_controller.dart';
+import 'package:proact/model/user_model.dart';
+import 'package:proact/services/user_service.dart';
 
 import '../../../utils/hive_store_util.dart';
 
@@ -20,14 +22,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-
-    // You can now access saved data here
-    String savedFirstName = HiveStoreUtil.getString('first_name') ?? '';
-    String savedLastName = HiveStoreUtil.getString('last_name') ?? '';
-
-    // Now initialize controllers
-    _firstNameController = TextEditingController(text: savedFirstName);
-    _lastNameController = TextEditingController(text: savedLastName);
+     UserModel user = UserService.getCurrentUserData();
+    _firstNameController = TextEditingController(text: user.firstName);
+    _lastNameController = TextEditingController(text: user.lastName);
   }
 
   @override

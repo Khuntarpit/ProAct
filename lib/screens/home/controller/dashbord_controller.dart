@@ -10,7 +10,7 @@ class DashboardController extends GetxController {
     updateProgress();
   }
 
-  void saveEvent(int index, Map<String, String> updatedEvent) {
+  void saveEvent(int index, Map<String, dynamic> updatedEvent) {
     eventData[index] = updatedEvent;
     updateProgress();
   }

@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:proact/controller/auth_controller.dart';
 import 'package:proact/controller/theme_controller.dart';
+import 'package:proact/model/user_model.dart';
 import 'package:proact/routes/routes.dart';
+import 'package:proact/services/user_service.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   ThemeController controller = Get.put(ThemeController());
   AuthController authController = Get.put(AuthController());
+  UserModel user = UserService.getCurrentUserData();
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +44,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       SizedBox(width: 170,),
                       Padding(
-                        padding: const EdgeInsets.only(left: 10.0,top: 20),
+                        padding: const EdgeInsets.only(left: 10.0,top: 20,right: 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Violet Amelia",style: TextStyle(fontSize: 25,color: Colors.white),),
+                            Text(
+                              "${user.firstName} ${user.lastName}",style: TextStyle(fontSize: 19,color: Colors.white),),
                             SizedBox(height: 8,),
-                            Text("violet17@ame.com",style: TextStyle(fontSize: 18,color: Colors.white),),
+                            Text(user.email,style: TextStyle(fontSize: 15,color: Colors.white),),
                           ],
                         ),
                       ),

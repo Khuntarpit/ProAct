@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:proact/constants/image_path.dart';
 import 'package:proact/screens/home/controller/home_controller.dart';
+import 'package:proact/services/task_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../routes/routes.dart';
@@ -16,14 +17,14 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
- HomeController homeController = Get.put(HomeController());
+  TasksController tasksController = TasksController();
   void initState() {
     Future.delayed(const Duration(seconds: 2),() async{
       final user = Supabase.instance.client.auth.currentUser;
       if(user == null){
         Get.offNamed(Routes.loginScreen);
       } else {
-        await homeController.loadEventData();
+        await tasksController.loadUserTasks();
         Get.offNamed(Routes.homeScreen);
       }
     });

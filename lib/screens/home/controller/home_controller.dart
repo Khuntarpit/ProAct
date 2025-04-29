@@ -2,10 +2,14 @@ import 'dart:convert';
 import 'package:calendar_day_view/calendar_day_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:proact/services/task_service.dart';
+import 'package:proact/services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../model/user_model.dart';
+import '../../../utils/hive_store_util.dart';
 import '../gemini_prompt.dart';
 
 class HomeController extends GetxController {
@@ -15,10 +19,11 @@ class HomeController extends GetxController {
   RxList<Map<String, dynamic>> eventData = <Map<String, dynamic>>[].obs;
   RxInt currentIndex = 0.obs;
 
+  TasksController tasksController = Get.put(TasksController());
+
   @override
   void onInit() {
     super.onInit();
-    loadEventData();
   }
 
   void showGeminiPrompt(BuildContext context, int eventId) {
@@ -35,9 +40,17 @@ class HomeController extends GetxController {
           padding: const EdgeInsets.all(16.0),
           height: height,
           child: GeminiPrompt(
-            onSubmit: (data) {
-              eventData.addAll(data);
-              saveEventData();
+            onSubmit: (data) async{
+              var user = await UserService.getCurrentUserData();
+              var data2 = data.map((e) {
+                e['created_by'] = user.userId;
+                return e;
+              }).toList();
+              eventData.addAll(data2);
+              saveEventData(data2);
+              Future.delayed(Duration(seconds: 5), () {
+                tasksController.loadUserTasks();
+              });
             },
             eventId: eventId,
           ),
@@ -46,12 +59,11 @@ class HomeController extends GetxController {
     );
   }
 
-  Future<void> saveEventData() async {
+  Future<void> saveEventData(eventData) async {
+
     final supabase = Supabase.instance.client;
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     String eventDataJson = jsonEncode(eventData);
-    await prefs.setString('eventData', eventDataJson);
 
     await Get.find<MethodChannelController>().saveEvents(eventDataJson);
 
@@ -68,16 +80,29 @@ class HomeController extends GetxController {
     }
   }
 
-
-
-  Future<void> loadEventData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String eventDataJson = prefs.getString('eventData') ?? '[]';
-    eventData.value = List<Map<String, dynamic>>.from(
-      (jsonDecode(eventDataJson) as List).map((e) => Map<String, dynamic>.from(e)),
-    );
-  }
-
+  // Future<void> loadEventData() async {
+  //   try {
+  //     final supabase = Supabase.instance.client;
+  //
+  //     final userId = HiveStoreUtil.getString(HiveStoreUtil.userIdKey);
+  //
+  //     final response = await supabase
+  //         .from(TasksController.tasks)
+  //         .select()
+  //         .eq(TasksController.createdBy, userId);
+  //
+  //     if (response.isEmpty) {
+  //       print('⚠️ No events found for user.');
+  //       eventData.value = [];
+  //     } else {
+  //       eventData.value = List<Map<String, dynamic>>.from(response);
+  //       print('✅ Loaded ${eventData.length} events from Supabase');
+  //     }
+  //   } catch (e) {
+  //     print('❗ Error loading event data from Supabase: $e');
+  //     eventData.value = [];
+  //   }
+  // }
 
 
   List<DayEvent<String>> get parsedDayEvents {

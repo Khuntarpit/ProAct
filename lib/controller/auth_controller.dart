@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:proact/services/task_service.dart';
+import 'package:proact/services/user_service.dart';
 import 'package:proact/utils/hive_store_util.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../model/user_model.dart';
 import '../routes/routes.dart';
 import '../utils/utils.dart';
 
@@ -15,24 +18,27 @@ class AuthController extends GetxController {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
 
-
-  login()async{
+  TasksController _tasksController = Get.put(TasksController());
+  Future<void> login() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
-    // Perform login using Supabase
+
     Utils.showLoading();
+
     final response = await Supabase.instance.client.auth.signInWithPassword(
       email: email,
       password: password,
     );
+
     Utils.closeLoading();
+
     if (response.user != null) {
-      // Successful login
-      HiveStoreUtil.setString(HiveStoreUtil.emailKey, email); // Store email locally
+      final uid = response.user!.id;
+      UserService.checkUser(uid);
+      _tasksController.loadUserTasks();
       Get.offAllNamed(Routes.homeScreen);
-    } else {
-      // Handle unsuccessful login if needed
-      print('Login failed');
+        } else {
+      print('❌ Login failed');
     }
   }
 
@@ -53,17 +59,21 @@ class AuthController extends GetxController {
     Utils.closeLoading();
 
     if (response.user != null) {
-      var userData = {
-        "first_name": firstName,
-        "last_name": lastName,
-        "email": email,
-        "password": password,
-        "status": 0,
-        "photo": "",
-      };
+      final uid = response.user!.id;
+
+      final user = UserModel(
+        userId: uid,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        password: password,
+        photo: '',
+      );
 
       try {
-        final insertResponse = await supabase.from('Users').insert(userData);
+        final insertResponse = await supabase
+            .from(UserService.users)
+            .insert(user.toMap());
 
         if (insertResponse.error != null) {
           print('❗ Supabase error: ${insertResponse.error!.message}');
@@ -71,12 +81,14 @@ class AuthController extends GetxController {
           print('✅ Data saved to Supabase: ${insertResponse.data}');
         }
 
-        // ✅ Save all data to Hive
-        HiveStoreUtil.setString(HiveStoreUtil.emailKey, email);
-        HiveStoreUtil.setString('first_name', firstName);
-        HiveStoreUtil.setString('last_name', lastName);
-        HiveStoreUtil.setString('photo', ""); // empty for now
-        HiveStoreUtil.setString('password', password); // not ideal, but you asked for it
+        // Store in Hive
+        HiveStoreUtil.setString(HiveStoreUtil.emailKey, user.email);
+        HiveStoreUtil.setString(HiveStoreUtil.userIdKey, user.userId);
+        HiveStoreUtil.setString(HiveStoreUtil.firstNameKey, user.firstName);
+        HiveStoreUtil.setString(HiveStoreUtil.lastNameKey, user.lastName);
+        HiveStoreUtil.setString(HiveStoreUtil.photo, user.photo);
+        HiveStoreUtil.setString(HiveStoreUtil.password, user.password); // ⚠️ Avoid this in real apps
+
       } catch (e) {
         print('❗ Exception saving to Supabase: $e');
       }
@@ -118,7 +130,7 @@ class AuthController extends GetxController {
       if (updateAuthResponse.user != null) {
         // Step 3: Update password field in 'Users' table too
         final updateUserResponse = await supabase
-            .from('Users')
+            .from(UserService.users)
             .update({'password': newPassword})
             .eq('email', email);
 
@@ -167,21 +179,24 @@ class AuthController extends GetxController {
     try {
       // Prepare data to update
       Map<String, dynamic> updateData = {
-        "first_name": firstName,
-        "last_name": lastName,
-        "photo": photoUrl,
+        UserService.firstName: firstName,
+        UserService.lastName: lastName,
+        UserService.photo: photoUrl,
       };
 
       if (newEmail != null && newEmail.isNotEmpty) {
         updateData["email"] = newEmail;
       }
 
-      // Update in Users table
+
       final response = await supabase
-          .from('Users')
+          .from(UserService.users)
           .update(updateData)
           .eq("email", currentEmail);
-
+      HiveStoreUtil.setString(HiveStoreUtil.firstNameKey, firstName);
+      HiveStoreUtil.setString(HiveStoreUtil.lastNameKey, lastName);
+      HiveStoreUtil.setString(HiveStoreUtil.photo, photoUrl);
+      Get.back();
       Utils.closeLoading();
 
       if (response.error != null) {

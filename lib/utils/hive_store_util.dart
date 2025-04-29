@@ -8,8 +8,10 @@ class HiveStoreUtil {
   static String accessTokenKey = "accessTokenKey";
   static String userIdKey = "userIdKey";
   static String emailKey = "emailKey";
-  static String lastNameKey = "lastNameKey";
-  static String firstNameKey = "firstNameKey";
+  static String lastNameKey = "last_name";
+  static String firstNameKey = "first_name";
+  static String photo = "photo";
+  static String password = "password";
   static var hiveBox = Hive.box('ProAct');
 
   static void setString(String key,String value){

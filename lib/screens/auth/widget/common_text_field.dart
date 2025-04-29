@@ -30,8 +30,7 @@ class CommonTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: const TextStyle(color: Colors.grey),
-            fillColor: const Color(0xFFf1f5f9),
-            filled: true,
+
             contentPadding:
             const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
             border: OutlineInputBorder(

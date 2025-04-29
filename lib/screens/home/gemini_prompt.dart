@@ -7,10 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:proact/constants/constants.dart';
 import 'package:proact/notification_service.dart';
 import 'package:proact/screens/home/controller/home_controller.dart';
-import 'package:proact/services/http_service.dart';
+import 'package:proact/services/task_service.dart';
 import 'package:proact/utils/app_urls.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../services/http_service.dart';
 import 'tabs/dashboard_screen.dart';
 
 class GeminiPrompt extends StatefulWidget {
@@ -199,8 +200,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
 
         // Parse response into a list of event data
         List<Map<String, dynamic>> parsedEventData = _parseEventData(responseText, events.length);
-        widget.onSubmit(
-            parsedEventData); // Pass parsed data back to parent widget
+        widget.onSubmit(parsedEventData); // Pass parsed data back to parent widget
       }
     } catch (e) {
       print('Error sending prompt to AI: $e');
@@ -270,6 +270,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
   }
 
   HomeController homeController = Get.put(HomeController());
+  TasksController tasksController = Get.put(TasksController());
 
   @override
   Widget build(BuildContext context) {
@@ -360,11 +361,10 @@ class _GeminiPromptState extends State<GeminiPrompt> {
                       if (_controller.text.isNotEmpty) {
                         if (widget.eventId >= 0) {
                           _submitEventPromptToGemini(_controller.text);
-                          homeController.loadEventData();
+                          tasksController.loadUserTasks();
                         } else {
                           _submitCreateEventPromptToGemini(_controller.text);
-                          homeController.loadEventData();
-
+                          tasksController.loadUserTasks();
                         }
                       }
                     },

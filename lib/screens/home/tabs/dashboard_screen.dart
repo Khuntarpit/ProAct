@@ -7,6 +7,7 @@ import 'package:proact/routes/routes.dart';
 import 'package:proact/screens/home/controller/home_controller.dart';
 import 'package:proact/notification_service.dart';
 import 'package:proact/screens/home/tabs/widgets/task_chart.dart';
+import 'package:proact/services/task_service.dart';
 import 'package:proact/utils/hive_store_util.dart';
 
 import '../../../core/value/app_colors.dart';
@@ -15,6 +16,8 @@ import 'widgets/event_card.dart';
 class DashboardScreen extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
   final HomeController homeController = Get.put(HomeController());
+  final TasksController taskController = Get.put(TasksController());
+
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +107,7 @@ class DashboardScreen extends StatelessWidget {
                         SizedBox(width: 4),
                         Obx(() => Text(
                           '${controller.eventData.length} tasks',
+                          style: TextStyle(fontSize: 17),
                         )),
                         SizedBox(width: 20),
         
@@ -131,15 +135,25 @@ class DashboardScreen extends StatelessWidget {
             Obx(() {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 80.0),
-                child: ListView.builder(
+                child: taskController.isLoading.value
+                    ? Padding(
+                      padding: const EdgeInsets.only(top: 50),
+                      child: Center(child: CircularProgressIndicator(color: Colors.grey,)),
+                    )
+                    : taskController.tasksList.length < 1
+                    ? Padding(
+                      padding: const EdgeInsets.only(top: 50),
+                      child: Center(child: Text("No Task",style: TextStyle(color: Colors.grey,fontSize: 16),)),
+                    )
+                    : ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: controller.eventData.length,
+                  itemCount: taskController.tasksList.length,
                   itemBuilder: (context, index) {
                     return EventCard(
                       index: index,
-                      listLength: controller.eventData.length,
-                      event: controller.eventData[index],
+                      listLength: taskController.tasksList.length,
+                      event: taskController.tasksList[index],
                       showGeminiPrompt: () {
                         homeController.showGeminiPrompt(context,index);
                       },
@@ -151,157 +165,12 @@ class DashboardScreen extends StatelessWidget {
                         controller.markEventAsDone(index, value);
                       },
                       onEdit: () {
-                        showDialog(
+                        showEditTaskDialog(
                           context: context,
-                          builder: (context) {
-                            var event = controller.eventData[index];
-                            final TextEditingController taskNameController =
-                            TextEditingController();
-                            final TextEditingController txtStartTimeController =
-                            TextEditingController();
-                            final TextEditingController txtEndTimeController =
-                            TextEditingController();
-                            taskNameController.text = event["title"]!;
-                            txtStartTimeController.text = event["start_time"]!;
-                            txtEndTimeController.text = event["end_time"]!;
-
-                            return AlertDialog(
-                              title: Text("Edit Task"),
-                              titleTextStyle: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 15,
-                                  color: Color(0xFF1A1A1A)),
-                              buttonPadding: EdgeInsets.all(25),
-                              actions: [
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    "Cancel",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    controller.saveEvent(index, {
-                                      'title': taskNameController.text,
-                                      'start_time': txtStartTimeController.text,
-                                      'end_time': txtEndTimeController.text,
-                                      'currenttimeinmillis':
-                                      '${DateTime.now().millisecondsSinceEpoch}',
-                                    });
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    "Save Task",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Task Name",
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(height: 20),
-                                    TextField(
-                                      style: TextStyle(fontSize: 16),
-                                      controller: taskNameController,
-                                      decoration: InputDecoration(
-                                        hintStyle: TextStyle(fontSize: 15),
-                                          hintText: "Task Name"
-                                      ),
-                                    ),
-                                    SizedBox(height: 20),
-                                    Text(
-                                      "Start Time",
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(height: 20),
-
-                                    TextField(
-                                      onTap: () async {
-                                        List startTime = event["startTime"]!.split(":");
-                                        int startHour = int.parse(startTime[0]);
-                                        int startMin = int.parse(startTime[1]);
-                                        TimeOfDay? timePicked = await showTimePicker(
-                                          context: context,
-                                          initialEntryMode: TimePickerEntryMode.dial,
-                                          initialTime: TimeOfDay(hour: startHour, minute: startMin),
-                                        );
-                                        if (timePicked != null) {
-                                          String pickedHour =
-                                          timePicked.hour > 9 ? "${timePicked.hour}" : "0${timePicked.hour}";
-                                          String pickedMin =
-                                          timePicked.minute > 9 ? "${timePicked.minute}" : "0${timePicked.minute}";
-                                          controller.saveEvent(index, {
-                                            'startTime': "$pickedHour:$pickedMin",
-                                          });
-                                        }
-                                      },
-                                      decoration: InputDecoration(
-                                        hintStyle: TextStyle(fontSize: 15),
-                                      ),
-                                      style: TextStyle(fontSize: 16),
-                                      controller: txtStartTimeController,
-                                      readOnly: true,
-                                    ),
-                                    SizedBox(height: 20),
-                                    Text(
-                                      "End Time",
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(height: 20),
-
-                                    TextField(
-                                      onTap: () async {
-                                        List endTime = event["endTime"]!.split(":");
-                                        int endHour = int.parse(endTime[0]);
-                                        int endMin = int.parse(endTime[1]);
-                                        TimeOfDay? timePicked = await showTimePicker(
-                                          context: context,
-                                          initialEntryMode: TimePickerEntryMode.dial,
-                                          initialTime: TimeOfDay(hour: endHour, minute: endMin),
-                                        );
-                                        if (timePicked != null) {
-                                          String pickedHour =
-                                          timePicked.hour > 9 ? "${timePicked.hour}" : "0${timePicked.hour}";
-                                          String pickedMin =
-                                          timePicked.minute > 9 ? "${timePicked.minute}" : "0${timePicked.minute}";
-                                          controller.saveEvent(index, {
-                                            'endTime': "$pickedHour:$pickedMin",
-                                          });
-                                        }
-                                      },
-                                      decoration: InputDecoration(
-                                        hintStyle: TextStyle(fontSize: 15),
-                                      ),
-                                      style: TextStyle(fontSize: 16),
-                                      controller: txtEndTimeController,
-                                      readOnly: true,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
+                          task: taskController.tasksList[index],
+                          index: index,
+                          onSave: (updatedTask) {
+                            controller.saveEvent(index, updatedTask);
                           },
                         );
                       },
@@ -315,6 +184,113 @@ class DashboardScreen extends StatelessWidget {
       ),
     );
   }
+
+  void showEditTaskDialog({
+    required BuildContext context,
+    required Map<String, dynamic> task,
+    required int index,
+    required Function(Map<String, dynamic>) onSave,
+  }) {
+    final taskNameController = TextEditingController(text: task["title"] ?? '');
+    final txtStartTimeController = TextEditingController(text: task["start_time"] ?? '');
+    final txtEndTimeController = TextEditingController(text: task["end_time"] ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Edit Task"),
+        titleTextStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 15,
+          color: Color(0xFF1A1A1A),
+        ),
+        buttonPadding: const EdgeInsets.all(25),
+        actions: [
+          InkWell(
+            onTap: () => Navigator.pop(context),
+            child: const Text("Cancel", style: TextStyle(fontSize: 15, color: Colors.grey)),
+          ),
+          InkWell(
+            onTap: () {
+              onSave({
+                'title': taskNameController.text,
+                'start_time': txtStartTimeController.text,
+                'end_time': txtEndTimeController.text,
+                'currenttimeinmillis': '${DateTime.now().millisecondsSinceEpoch}',
+              });
+              Navigator.pop(context);
+            },
+            child: const Text("Save Task", style: TextStyle(fontSize: 15, color: Colors.blue)),
+          ),
+        ],
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildLabel("Task Name"),
+              TextField(
+                controller: taskNameController,
+                decoration: const InputDecoration(hintText: "Task Name"),
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              _buildLabel("Start Time"),
+              TextField(
+                controller: txtStartTimeController,
+                readOnly: true,
+                onTap: () async {
+                  final time = await _pickTime(context, task["start_time"]);
+                  if (time != null) txtStartTimeController.text = time;
+                },
+                decoration: const InputDecoration(),
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              _buildLabel("End Time"),
+              TextField(
+                controller: txtEndTimeController,
+                readOnly: true,
+                onTap: () async {
+                  final time = await _pickTime(context, task["end_time"]);
+                  if (time != null) txtEndTimeController.text = time;
+                },
+                decoration: const InputDecoration(),
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Future<String?> _pickTime(BuildContext context, String? initial) async {
+    if (initial == null || !initial.contains(":")) return null;
+    final parts = initial.split(":");
+    final hour = int.tryParse(parts[0]) ?? 0;
+    final min = int.tryParse(parts[1]) ?? 0;
+
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: hour, minute: min),
+      initialEntryMode: TimePickerEntryMode.dial,
+    );
+
+    if (time != null) {
+      final h = time.hour.toString().padLeft(2, '0');
+      final m = time.minute.toString().padLeft(2, '0');
+      return "$h:$m";
+    }
+    return null;
+  }
+
 
   Future showBlockAppDialog(BuildContext context) {
      return showDialog(

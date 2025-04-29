@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:proact/controller/auth_controller.dart';
 import 'package:proact/routes/routes.dart';
+import 'package:proact/screens/auth/widget/common_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
 
@@ -23,9 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
           '',
           style: GoogleFonts.poppins(fontSize: 14,),
         ),
-        backgroundColor: Colors.white,
       ),
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0).add(
           EdgeInsets.only(top: 120.0),
@@ -54,21 +53,10 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextFormField(
+                  CommonTextField(
                     controller: controller.emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email Address',
-                      hintStyle: TextStyle(color: Colors.grey),
-                      fillColor: Color(0xFFf1f5f9),
-                      filled: true,
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 12.0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    style: GoogleFonts.poppins(fontSize: 14,),
+                    label: "Email Address",
+                    hintText: "Email Address",
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email address';
@@ -79,24 +67,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                       return null;
                     },
-                  ),
+                  )
+                 ,
                   SizedBox(height: 16),
-                  TextFormField(
+                  CommonTextField(
                     controller: controller.passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      hintStyle: TextStyle(color: Colors.grey),
-                      fillColor: Color(0xFFf1f5f9),
-                      filled: true,
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 12.0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    style: GoogleFonts.poppins(fontSize: 14,),
-                    obscureText: true,
+                    hintText: "Password",
+                    label: "Password",
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
@@ -104,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
+
                   SizedBox(height: 10),
                   TextButton(
                       onPressed: () {
@@ -206,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Forgot Password?",
                           style: TextStyle(
                             fontSize: 15,
-                            color: Color(0xFF1A1A1A),
+                            color: Theme.of(context).iconTheme.color
                           ),
                         ),
                       )),
@@ -220,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: ButtonStyle(
                       minimumSize: WidgetStateProperty.all<Size>(
                           Size(double.infinity, 50)),
-                      backgroundColor: WidgetStateProperty.all<Color>(Color(0xFF1A1A1A)),
+                      backgroundColor: WidgetStateProperty.all<Color>(Color(0xff000000)),
                       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
@@ -243,29 +221,30 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 12),
+            SizedBox(height: 15),
             GestureDetector(
               onTap: () {
                 Get.toNamed(Routes.signupScreen);
               },
-              child: RichText(
-                text: TextSpan(
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    color: Colors.black,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "Don't have an account? ",
+              child: Center(
+                child: RichText(
+                  text: TextSpan(
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Theme.of(context).iconTheme.color
                     ),
-                    TextSpan(
-                      text: 'Sign Up',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1A1A1A),
+                    children: [
+                      TextSpan(
+                        text: "Don't have an account? ",
                       ),
-                    ),
-                  ],
+                      TextSpan(
+                        text: 'Sign Up',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -23,9 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           '',
           style: GoogleFonts.poppins(fontSize: 14,), // Poppins font for app bar title
         ),
-        backgroundColor: Colors.white, // Set app bar background color to white
       ),
-      backgroundColor: Colors.white, // Set scaffold background color to white
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -58,13 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       controller: controller.firstNameController,
                       hintText: "First name",
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        if (value.length < 6) {
-                          return 'Password must be at least 6 characters long';
-                        }
-                        return null;
+
                       },
                     ),
                     SizedBox(height: 15),
@@ -73,13 +65,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       controller: controller.lastNameController,
                       hintText: "Last name",
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        if (value.length < 6) {
-                          return 'Password must be at least 6 characters long';
-                        }
-                        return null;
+
                       },
                     ),
                     SizedBox(height: 15),
@@ -125,7 +111,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         minimumSize: WidgetStateProperty.all<Size>(
                             Size(double.infinity, 50)), // Full width button
                         backgroundColor: WidgetStateProperty.all<Color>(
-                            Color(0xFF1A1A1A)), // Black background color
+                            Color(0xff000000)), // Black background color
                         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius:
@@ -158,19 +144,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             text: TextSpan(
                               style: GoogleFonts.poppins(
                                 fontSize: 15,
-                                color: Colors.black,
                               ),
                               children: [
                                 TextSpan(
                                   text: "Already have an account? ",
-                                  style: TextStyle(fontSize: 13)
+                                  style: TextStyle(fontSize: 13,color: Theme.of(context).iconTheme.color)
+
                                 ),
                                 TextSpan(
                                   text: 'Log In',
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF1A1A1A),
+                                      color: Theme.of(context).iconTheme.color
+
                                   ),
                                 ),
                               ],
