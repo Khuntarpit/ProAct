@@ -6,13 +6,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:proact/constants/constants.dart';
 import 'package:proact/notification_service.dart';
-import 'package:proact/screens/home/controller/home_controller.dart';
-import 'package:proact/services/task_service.dart';
 import 'package:proact/utils/app_urls.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:proact/utils/hive_store_util.dart';
 
+import '../../controller/home_controller.dart';
 import '../../services/http_service.dart';
-import 'tabs/dashboard_screen.dart';
 
 class GeminiPrompt extends StatefulWidget {
   final Function(List<Map<String, dynamic>>) onSubmit;
@@ -35,8 +33,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
       List<Map<String, dynamic>> events =
       []; // Replace with your actual events list
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String eventDataJson = prefs.getString('eventData') ?? '[]';
+      String eventDataJson = HiveStoreUtil.getString(HiveStoreUtil.eventData,defaultVal: '[]');
       events = List<Map<String, dynamic>>.from(
         (jsonDecode(eventDataJson) as List)
             .map((e) => Map<String, String>.from(e)),
@@ -132,8 +129,7 @@ class _GeminiPromptState extends State<GeminiPrompt> {
       List<Map<String, dynamic>> events =
       []; // Replace with your actual events list
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String eventDataJson = prefs.getString('eventData') ?? '[]';
+      String eventDataJson = HiveStoreUtil.getString(HiveStoreUtil.eventData,defaultVal: '[]');
       events = List<Map<String, dynamic>>.from(
         (jsonDecode(eventDataJson) as List)
             .map((e) => Map<String, dynamic>.from(e)),
@@ -269,9 +265,6 @@ class _GeminiPromptState extends State<GeminiPrompt> {
     return eventData;
   }
 
-  HomeController homeController = Get.put(HomeController());
-  TasksController tasksController = Get.put(TasksController());
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -361,11 +354,11 @@ class _GeminiPromptState extends State<GeminiPrompt> {
                       if (_controller.text.isNotEmpty) {
                         if (widget.eventId >= 0) {
                           _submitEventPromptToGemini(_controller.text);
-                          tasksController.loadUserTasks();
                         } else {
                           _submitCreateEventPromptToGemini(_controller.text);
-                          tasksController.loadUserTasks();
                         }
+                        HomeController controller = Get.find();
+                        controller.loadUserTasks();
                       }
                     },
                   ),

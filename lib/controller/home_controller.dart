@@ -4,13 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:proact/services/task_service.dart';
 import 'package:proact/services/user_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../../../model/user_model.dart';
-import '../../../utils/hive_store_util.dart';
-import '../gemini_prompt.dart';
+import '../screens/home/gemini_prompt.dart';
 
 class HomeController extends GetxController {
   final Rx<DateTime> selectedDate = DateTime.now().obs;
@@ -18,11 +14,31 @@ class HomeController extends GetxController {
   RxString emailPrefix = ''.obs;
   RxList<Map<String, dynamic>> eventData = <Map<String, dynamic>>[].obs;
   RxInt currentIndex = 0.obs;
+  Rx<bool> isLoading = false.obs;
+  RxList<Map<String, dynamic>> tasksList = <Map<String, dynamic>>[].obs;
 
-  TasksController tasksController = Get.put(TasksController());
+  Future<void> loadUserTasks() async {
+    isLoading.value = true;
+    try {
+      var data = await TasksService.getTasks();
+      tasksList.value = List<Map<String, dynamic>>.from(data);
+      print("✅ Fetched tasks: ${tasksList}");
+    } catch (e) {
+      print('❗ Error fetching tasks: $e');
+      tasksList.value = [];
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> updateTaskStatus(taskId, newStatus) async {
+    await TasksService.updateTaskStatus(taskId, newStatus);
+    loadUserTasks();
+  }
 
   @override
   void onInit() {
+    loadUserTasks();
     super.onInit();
   }
 
@@ -49,7 +65,7 @@ class HomeController extends GetxController {
               eventData.addAll(data2);
               saveEventData(data2);
               Future.delayed(Duration(seconds: 5), () {
-                tasksController.loadUserTasks();
+                loadUserTasks();
               });
             },
             eventId: eventId,
@@ -79,31 +95,6 @@ class HomeController extends GetxController {
       print('❗ Exception saving to Supabase: $e');
     }
   }
-
-  // Future<void> loadEventData() async {
-  //   try {
-  //     final supabase = Supabase.instance.client;
-  //
-  //     final userId = HiveStoreUtil.getString(HiveStoreUtil.userIdKey);
-  //
-  //     final response = await supabase
-  //         .from(TasksController.tasks)
-  //         .select()
-  //         .eq(TasksController.createdBy, userId);
-  //
-  //     if (response.isEmpty) {
-  //       print('⚠️ No events found for user.');
-  //       eventData.value = [];
-  //     } else {
-  //       eventData.value = List<Map<String, dynamic>>.from(response);
-  //       print('✅ Loaded ${eventData.length} events from Supabase');
-  //     }
-  //   } catch (e) {
-  //     print('❗ Error loading event data from Supabase: $e');
-  //     eventData.value = [];
-  //   }
-  // }
-
 
   List<DayEvent<String>> get parsedDayEvents {
     List<DayEvent<String>> dayEvents = [];

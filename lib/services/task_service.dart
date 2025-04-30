@@ -2,12 +2,11 @@ import 'package:get/get.dart';
 import 'package:proact/services/user_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class TasksController extends GetxController {
-  Rx<bool> isLoading = false.obs;
-  RxList<Map<String, dynamic>> tasksList = <Map<String, dynamic>>[].obs;
+class TasksService {
 
   static var client = Supabase.instance.client;
   static var tasks = "Tasks";
+  static var id = "id";
   static var createdBy = "created_by";
   static var title = "title";
   static var description = "description";
@@ -15,50 +14,37 @@ class TasksController extends GetxController {
   static var endTime = "end_time";
   static var status = "status";
 
-  Future<void> updateTaskStatus(int taskId, int newStatus) async {
+  static Future<List<Map<String, dynamic>>> updateTaskStatus(int taskId, int newStatus) async {
     final supabase = Supabase.instance.client;
-
     try {
       final response = await supabase
-          .from('Tasks')
-          .update({'status': newStatus})
-          .eq('id', taskId)
+          .from(tasks)
+          .update({status: newStatus})
+          .eq(id, taskId)
           .select(); // Add this to get updated data back
 
       print('✅ Task status updated: $response');
-      loadUserTasks();
-      // update();
+      return response;
     } catch (e) {
       print('❗ Error updating task status: $e');
+      throw Exception('Error updating task status: $e');
     }
   }
 
-  Future<void> loadUserTasks() async {
-    isLoading.value = true;
-
+  static Future<List<Map<String, dynamic>>> getTasks() async {
     try {
       final user = await UserService.getCurrentUserData();
       final userId = user.userId;
-
       final data = await Supabase.instance.client
           .from(tasks)
           .select()
           .eq(createdBy, userId);
-
-      tasksList.value = List<Map<String, dynamic>>.from(data);
-      print("✅ Fetched tasks: ${tasksList.value}");
+      return data;
     } catch (e) {
-      print('❗ Error fetching tasks: $e');
-      tasksList.value = [];
-    } finally {
-      isLoading.value = false;
+      print('❗ Error updating task status: $e');
+      throw Exception('Error getting task status: $e');
     }
   }
 
-  @override
-  void onInit() {
-    loadUserTasks();
-    super.onInit();
-  }
 
 }

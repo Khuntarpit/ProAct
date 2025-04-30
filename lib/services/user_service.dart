@@ -29,6 +29,52 @@ class UserService {
 
   }
 
+  static insertUser(UserModel user)async{
+    final insertResponse = await client
+        .from(UserService.users)
+        .insert(user.toMap());
+
+    HiveStoreUtil.setString(HiveStoreUtil.emailKey, user.email ?? '');
+    HiveStoreUtil.setString(HiveStoreUtil.userIdKey, user.userId);
+    HiveStoreUtil.setString(HiveStoreUtil.firstNameKey, user.firstName ?? '');
+    HiveStoreUtil.setString(HiveStoreUtil.lastNameKey, user.lastName ?? '');
+    HiveStoreUtil.setString(HiveStoreUtil.photo, user.photo ?? '');
+    HiveStoreUtil.setString(HiveStoreUtil.password, user.password ?? '');
+    return insertResponse;
+  }
+
+  static updatePassword(String newPassword,String email)async{
+
+    final updateUserResponse = await client
+        .from(UserService.users)
+        .update({password: newPassword})
+        .eq(email, email);
+    return updateUserResponse;
+  }
+
+  static updateProfile({required String firstName,required String lastName,required String photoUrl,required String? newEmail})async{
+    final currentEmail = HiveStoreUtil.getString(HiveStoreUtil.emailKey); // get logged-in user's current email
+    // Prepare data to update
+    Map<String, dynamic> updateData = {
+      UserService.firstName: firstName,
+      UserService.lastName: lastName,
+      UserService.photo: photoUrl,
+    };
+
+    if (newEmail != null && newEmail.isNotEmpty) {
+      updateData[email] = newEmail;
+    }
+
+    final response = await client
+        .from(users)
+        .update(updateData)
+        .eq(email, currentEmail);
+    HiveStoreUtil.setString(HiveStoreUtil.firstNameKey, firstName);
+    HiveStoreUtil.setString(HiveStoreUtil.lastNameKey, lastName);
+    HiveStoreUtil.setString(HiveStoreUtil.photo, photoUrl);
+    return response;
+  }
+
   static UserModel getCurrentUserData() {
     final email = HiveStoreUtil.getString(HiveStoreUtil.emailKey);
     final userId = HiveStoreUtil.getString(HiveStoreUtil.userIdKey);

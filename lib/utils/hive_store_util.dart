@@ -12,14 +12,18 @@ class HiveStoreUtil {
   static String firstNameKey = "first_name";
   static String photo = "photo";
   static String password = "password";
+  static const String passCode = "passCode";
+  static const String splash = "splash";
+  static const String lockedApps = 'lockedApps';
+  static const String eventData = 'eventData';
   static var hiveBox = Hive.box('ProAct');
 
   static void setString(String key,String value){
     hiveBox.put(key, value);
   }
 
-  static String getString(String key){
-    return hiveBox.get(key,defaultValue: "");
+  static String getString(String key, {String defaultVal = ""}){
+    return hiveBox.get(key,defaultValue: defaultVal);
   }
 
   static void setInt(String key,int value){

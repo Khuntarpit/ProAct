@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:proact/services/task_service.dart';
-
+import '../../../../controller/home_controller.dart';
 import '../../../../core/value/app_colors.dart';
 
-class EventCard extends StatefulWidget {
+class EventCard extends StatelessWidget {
   final Map<String, dynamic> event;
   final Function onDelete;
   final Function onEdit;
@@ -15,7 +14,6 @@ class EventCard extends StatefulWidget {
   final int id;
   final int index;
   final int status;
-
   final int listLength;
 
   const EventCard(
@@ -28,16 +26,11 @@ class EventCard extends StatefulWidget {
         required this.onDelete,
         required this.onEdit,
         required this.showGeminiPrompt,
-        required this.markAsDone});
+        required this.markAsDone,
+      });
 
-  @override
-  State<EventCard> createState() => _EventCardState();
-}
-
-class _EventCardState extends State<EventCard> {
   @override
   Widget build(BuildContext context) {
-    TasksController tasksController = Get.put(TasksController());
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0.0),
       child: Row(
@@ -47,21 +40,21 @@ class _EventCardState extends State<EventCard> {
             padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Column(
               children: [
-                if(widget.index != 0)
+                if(index != 0)
                 Column(
                   children: [
                     Text(".",style: TextStyle(color: Colors.grey),),
                     Text(".",style: TextStyle(color: Colors.grey),),
                   ],
-                ), if(widget.index == 0)
+                ), if(index == 0)
                 Column(
                   children: [
                     Text("",style: TextStyle(color: Colors.grey),),
                     Text("",style: TextStyle(color: Colors.grey),),
                   ],
                 ),
-                Text(widget.event['start_time'] ?? '',style: TextStyle(fontSize: 15,color: Colors.grey),),
-                if(widget.listLength-1 != widget.index)
+                Text(event['start_time'] ?? '',style: TextStyle(fontSize: 15,color: Colors.grey),),
+                if(listLength-1 != index)
                 Column(
                   children: [
                     Text(".",style: TextStyle(color: Colors.grey),),
@@ -70,7 +63,7 @@ class _EventCardState extends State<EventCard> {
                     Text(".",style: TextStyle(color: Colors.grey),),
                   ],
                 ),
-                if(widget.listLength == widget.index)
+                if(listLength == index)
                   Column(
                     children: [
                       Text("",style: TextStyle(color: Colors.grey),),
@@ -99,7 +92,7 @@ class _EventCardState extends State<EventCard> {
                           children: [
                             Expanded(
                               child: Text(
-                                '${widget.event['title']}' ?? '',
+                                '${event['title']}' ?? '',
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: true,
                                 maxLines: 2,
@@ -110,7 +103,7 @@ class _EventCardState extends State<EventCard> {
                               ),
                             ),
                             SizedBox(width: 8,),
-                            if(widget.event['doneStatus'] == 1 )
+                            if(event['doneStatus'] == 1 )
 
                             Padding(
                               padding: const EdgeInsets.only(right: 8.0),
@@ -142,7 +135,7 @@ class _EventCardState extends State<EventCard> {
                           Icon(Icons.schedule, color: Colors.blueAccent, size: 20),
                           SizedBox(width: 8),
                           Text(
-                            'Time: ${widget.event['start_time'] ?? ''} - ${widget.event['end_time'] ?? ''}',
+                            'Time: ${event['start_time'] ?? ''} - ${event['end_time'] ?? ''}',
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                             ),
@@ -162,12 +155,12 @@ class _EventCardState extends State<EventCard> {
                       // IconButton(
                       //   icon: Icon(Icons.message_rounded, size: 18),
                       //   onPressed: () {
-                      //     widget.showGeminiPrompt();
+                      //     showGeminiPrompt();
                       //   },
                       // ),
                       GestureDetector(
                         onTap: () {
-                          widget.onEdit();
+                          onEdit();
                         },
                         child: SvgPicture.asset(
                           "assets/icons/edit_icon.svg",
@@ -176,7 +169,7 @@ class _EventCardState extends State<EventCard> {
                       SizedBox(height: 12,),
                       GestureDetector(
                         onTap: () {
-                          widget.onDelete();
+                          onDelete();
                         },
                         child: SvgPicture.asset(
                           "assets/icons/delete_icon.svg",
@@ -186,17 +179,15 @@ class _EventCardState extends State<EventCard> {
 
                       GestureDetector(
                         onTap: () {
-                          tasksController.updateTaskStatus(widget.id, widget.status == 0 ? 1 : 0);
+                          HomeController controller = Get.find();
+                          controller.updateTaskStatus(id, status == 0 ? 1 : 0);
                         },
                         child: SvgPicture.asset(
-                          widget.status == 0 ?
+                          status == 0 ?
                           "assets/icons/grey_check_icon.svg"
                           :"assets/icons/green_check_icon.svg"
                         ),
                       ),
-
-
-
                     ],
                   ),
                 ],
@@ -207,9 +198,8 @@ class _EventCardState extends State<EventCard> {
       ),
     );
   }
-  BoxDecoration customBoxDecoration(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
+  BoxDecoration customBoxDecoration(BuildContext context) {
     return BoxDecoration(
       color:Theme.of(context).scaffoldBackgroundColor,
       borderRadius: BorderRadius.only(bottomLeft: Radius.circular(65),topLeft: Radius.circular(20)),

@@ -17,85 +17,75 @@ class AuthController extends GetxController {
   final confirmPasswordController = TextEditingController();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
+  final client = Supabase.instance.client;
 
-  TasksController _tasksController = Get.put(TasksController());
   Future<void> login() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
-
     Utils.showLoading();
-
-    final response = await Supabase.instance.client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
-
-    Utils.closeLoading();
-
-    if (response.user != null) {
-      final uid = response.user!.id;
-      UserService.checkUser(uid);
-      _tasksController.loadUserTasks();
-      Get.offAllNamed(Routes.homeScreen);
-        } else {
-      print('❌ Login failed');
+    try{
+      final response = await client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      if (response.user != null) {
+        final uid = response.user!.id;
+        await UserService.checkUser(uid);
+        Utils.closeLoading();
+        Get.offAllNamed(Routes.homeScreen);
+      } else {
+        Utils.closeLoading();
+        print('❌ Login failed');
+      }
+    } on AuthException catch (e){
+      Utils.closeLoading();
+      Utils.showToast("${e.message}");
+    } catch (e){
+      Utils.closeLoading();
+      Utils.showToast("${e}");
     }
   }
 
   Future<void> signup() async {
-    final supabase = Supabase.instance.client;
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final firstName = firstNameController.text.trim();
     final lastName = lastNameController.text.trim();
-
     Utils.showLoading();
+    try{
 
-    final response = await supabase.auth.signUp(
-      email: email,
-      password: password,
-    );
-
-    Utils.closeLoading();
-
-    if (response.user != null) {
-      final uid = response.user!.id;
-
-      final user = UserModel(
-        userId: uid,
+      final response = await client.auth.signUp(
         email: email,
-        firstName: firstName,
-        lastName: lastName,
         password: password,
-        photo: '',
       );
+      if (response.user != null) {
+        final uid = response.user!.id;
 
-      try {
-        final insertResponse = await supabase
-            .from(UserService.users)
-            .insert(user.toMap());
+        final user = UserModel(
+          userId: uid,
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          password: password,
+          photo: '',
+        );
 
-        if (insertResponse.error != null) {
-          print('❗ Supabase error: ${insertResponse.error!.message}');
-        } else {
-          print('✅ Data saved to Supabase: ${insertResponse.data}');
+        try {
+          await UserService.insertUser(user);
+        } catch (e) {
+          print('❗ Exception saving to Supabase: $e');
         }
-
-        // Store in Hive
-        HiveStoreUtil.setString(HiveStoreUtil.emailKey, user.email);
-        HiveStoreUtil.setString(HiveStoreUtil.userIdKey, user.userId);
-        HiveStoreUtil.setString(HiveStoreUtil.firstNameKey, user.firstName);
-        HiveStoreUtil.setString(HiveStoreUtil.lastNameKey, user.lastName);
-        HiveStoreUtil.setString(HiveStoreUtil.photo, user.photo);
-        HiveStoreUtil.setString(HiveStoreUtil.password, user.password); // ⚠️ Avoid this in real apps
-
-      } catch (e) {
-        print('❗ Exception saving to Supabase: $e');
+        Utils.closeLoading();
+        Get.offAllNamed(Routes.homeScreen);
+      } else {
+        print('❌ Signup failed');
       }
-
-      Get.offAllNamed(Routes.homeScreen);
-    } else {
-      print('❌ Signup failed');
+    } on AuthException catch (e){
+      Utils.closeLoading();
+      Utils.showToast("${e.message}");
+    } catch (e){
+      Utils.closeLoading();
+      Utils.showToast("${e}");
     }
   }
 
@@ -104,14 +94,12 @@ class AuthController extends GetxController {
     required String oldPassword,
     required String newPassword,
   }) async {
-    final supabase = Supabase.instance.client;
     final email = HiveStoreUtil.getString(HiveStoreUtil.emailKey);
-
     Utils.showLoading();
 
     try {
       // Step 1: Re-authenticate with old password
-      final signInResponse = await supabase.auth.signInWithPassword(
+      final signInResponse = await client.auth.signInWithPassword(
         email: email,
         password: oldPassword,
       );
@@ -123,25 +111,16 @@ class AuthController extends GetxController {
       }
 
       // Step 2: Change password in Auth
-      final updateAuthResponse = await supabase.auth.updateUser(
+      final updateAuthResponse = await client.auth.updateUser(
         UserAttributes(password: newPassword),
       );
 
       if (updateAuthResponse.user != null) {
         // Step 3: Update password field in 'Users' table too
-        final updateUserResponse = await supabase
-            .from(UserService.users)
-            .update({'password': newPassword})
-            .eq('email', email);
-
-        if (updateUserResponse.error != null) {
-          print('❗ Failed to update password in Users table: ${updateUserResponse.error!.message}');
-        } else {
-          print('✅ Password updated successfully in Users table');
-        }
-
+        await UserService.updatePassword(newPassword, email);
         Utils.closeLoading();
         print('✅ Password updated successfully');
+        Get.back();
       } else {
         Utils.closeLoading();
         print('❗ Failed to update password');
@@ -172,30 +151,9 @@ class AuthController extends GetxController {
     required String photoUrl,
     String? newEmail, // optional new email
   }) async {
-    final supabase = Supabase.instance.client;
-    final currentEmail = HiveStoreUtil.getString(HiveStoreUtil.emailKey); // get logged-in user's current email
-
     Utils.showLoading();
     try {
-      // Prepare data to update
-      Map<String, dynamic> updateData = {
-        UserService.firstName: firstName,
-        UserService.lastName: lastName,
-        UserService.photo: photoUrl,
-      };
-
-      if (newEmail != null && newEmail.isNotEmpty) {
-        updateData["email"] = newEmail;
-      }
-
-
-      final response = await supabase
-          .from(UserService.users)
-          .update(updateData)
-          .eq("email", currentEmail);
-      HiveStoreUtil.setString(HiveStoreUtil.firstNameKey, firstName);
-      HiveStoreUtil.setString(HiveStoreUtil.lastNameKey, lastName);
-      HiveStoreUtil.setString(HiveStoreUtil.photo, photoUrl);
+      var response = await UserService.updateProfile(firstName: firstName, lastName: lastName, photoUrl: photoUrl, newEmail: newEmail);
       Get.back();
       Utils.closeLoading();
 
@@ -215,8 +173,6 @@ class AuthController extends GetxController {
     }
   }
 
-
-
   resetPasswordSend(){
     Get.back();
     final email = emailController.text.trim();
@@ -224,7 +180,6 @@ class AuthController extends GetxController {
 
     Supabase.instance.client.auth
         .resetPasswordForEmail(email)
-    // .resetPasswordForEmail(email)
         .then((value) {
       Utils.closeLoading();
       Get.toNamed(Routes.resetPasswordScreen);
@@ -240,19 +195,18 @@ class AuthController extends GetxController {
     Utils.showLoading(msg: "Resetting Password");
     // Perform login using Supabase
     try {
-      var supabaseClient = Supabase.instance.client;
-      final recovery = await supabaseClient.auth
+      final recovery = await client.auth
           .verifyOTP(
           email: email,
           token: token,
           type: OtpType.recovery);
       print(recovery);
-      final response = await supabaseClient.auth
+      final response = await client.auth
           .updateUser(UserAttributes(password: password));
 
       print(response);
       if (response.user != null) {
-        await supabaseClient.auth
+        await client.auth
             .signOut(scope: SignOutScope.global);
         Utils.closeLoading();
         Get.back();

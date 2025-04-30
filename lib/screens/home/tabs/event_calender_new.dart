@@ -2,20 +2,18 @@ import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:proact/core/value/app_colors.dart';
-import 'package:proact/screens/home/controller/home_controller.dart';
-
+import '../../../controller/home_controller.dart';
 import '../../../tabs/overflow_day_view_tab.dart';
 
 class EventCalenderNew extends HookWidget {
+  HomeController controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         extendBodyBehindAppBar: true,
-        // appBar:  DateSelector(context),
         body: Stack(
           children: [
             Container(
@@ -75,7 +73,7 @@ class EventCalenderNew extends HookWidget {
     );
   }
   Widget DateSelector(BuildContext con ) {
-    HomeController controller = Get.put(HomeController());
+
     return PreferredSize(
       preferredSize: const Size.fromHeight(200),
       child: EasyDateTimeLine(

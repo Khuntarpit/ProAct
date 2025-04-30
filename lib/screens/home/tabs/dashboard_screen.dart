@@ -4,24 +4,22 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:proact/blockapps/screens/home.dart';
 import 'package:proact/routes/routes.dart';
-import 'package:proact/screens/home/controller/home_controller.dart';
 import 'package:proact/notification_service.dart';
 import 'package:proact/screens/home/tabs/widgets/task_chart.dart';
-import 'package:proact/services/task_service.dart';
 import 'package:proact/utils/hive_store_util.dart';
 
+import '../../../controller/home_controller.dart';
 import '../../../core/value/app_colors.dart';
-import '../controller/dashbord_controller.dart';
+import '../../../controller/dashbord_controller.dart';
 import 'widgets/event_card.dart';
 class DashboardScreen extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
   final HomeController homeController = Get.put(HomeController());
-  final TasksController taskController = Get.put(TasksController());
 
 
   @override
   Widget build(BuildContext context) {
-    controller.setEvents(homeController.eventData);
+    controller.setEvents(homeController.tasksList);
 
     return Scaffold(
       appBar: AppBar(
@@ -135,12 +133,12 @@ class DashboardScreen extends StatelessWidget {
             Obx(() {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 80.0),
-                child: taskController.isLoading.value
+                child: homeController.isLoading.value
                     ? Padding(
                       padding: const EdgeInsets.only(top: 50),
                       child: Center(child: CircularProgressIndicator(color: Colors.grey,)),
                     )
-                    : taskController.tasksList.length < 1
+                    : homeController.tasksList.length < 1
                     ? Padding(
                       padding: const EdgeInsets.only(top: 50),
                       child: Center(child: Text("No Task",style: TextStyle(color: Colors.grey,fontSize: 16),)),
@@ -148,14 +146,14 @@ class DashboardScreen extends StatelessWidget {
                     : ListView.builder(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: taskController.tasksList.length,
+                  itemCount: homeController.tasksList.length,
                   itemBuilder: (context, index) {
                     return EventCard(
-                      id: taskController.tasksList[index]["id"],
-                      status: taskController.tasksList[index]["status"],
+                      id: homeController.tasksList[index]["id"],
+                      status: homeController.tasksList[index]["status"],
                       index: index,
-                      listLength: taskController.tasksList.length,
-                      event: taskController.tasksList[index],
+                      listLength: homeController.tasksList.length,
+                      event: homeController.tasksList[index],
                       showGeminiPrompt: () {
                         homeController.showGeminiPrompt(context,index);
                       },
@@ -169,7 +167,7 @@ class DashboardScreen extends StatelessWidget {
                       onEdit: () {
                         showEditTaskDialog(
                           context: context,
-                          task: taskController.tasksList[index],
+                          task: homeController.tasksList[index],
                           index: index,
                           onSave: (updatedTask) {
                             controller.saveEvent(index, updatedTask);
