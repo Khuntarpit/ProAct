@@ -9,6 +9,7 @@ import 'package:proact/services/user_service.dart';
 import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../screens/home/gemini_prompt.dart';
+import 'dashbord_controller.dart';
 
 class HomeController extends GetxController {
   final Rx<DateTime> selectedDate = DateTime.now().obs;
@@ -37,6 +38,14 @@ class HomeController extends GetxController {
     await TasksService.updateTaskStatus(taskId, newStatus);
   }
 
+  Future<void> deleteTask(taskId) async {
+    await TasksService.deleteTask(taskId);
+  }
+
+  Future<void> updateTask(taskId,task) async {
+    await TasksService.updateTask(taskId,task);
+  }
+
   @override
   void onInit() {
     loadUserTasks();
@@ -63,7 +72,9 @@ class HomeController extends GetxController {
                 e['created_by'] = user.userId;
                 return e;
               }).toList();
-              saveEventData(data2);
+              await saveEventData(data2);
+              DashboardController contriller = Get.find();
+              contriller.updateProgress();
             },
             eventId: eventId,
           ),
@@ -74,7 +85,7 @@ class HomeController extends GetxController {
 
   Future<void> saveEventData(eventData) async {
     try {
-      await TasksService.insertUser(eventData);
+      await TasksService.insertTask(eventData);
       loadUserTasks();
     } catch (e) {
       print('❗ Exception saving to Supabase: $e');

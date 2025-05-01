@@ -6,6 +6,7 @@ import 'package:proact/model/task_model.dart';
 
 import '../../../../controller/dashbord_controller.dart';
 import '../../../../notification_service.dart';
+import '../../../../services/task_service.dart';
 import 'event_card.dart';
 
 class TaskListview extends StatelessWidget {
@@ -62,8 +63,13 @@ class TaskListview extends StatelessWidget {
                     showGeminiPrompt: () {
                       homeController.showGeminiPrompt(context, index);
                     },
-                    onDelete: () {
+                    onDelete: () async {
                       notifyService.cancelEventNotification(index);
+                      await homeController.deleteTask(task.id,);
+                      homeController.tasksList.removeAt(index);
+                      homeController.update();
+                      DashboardController contriller = Get.find();
+                      contriller.updateProgress();
                     },
                     markAsDone: () async {
                       homeController.tasksList[index].status = task.status == 0 ? 1 : 0;
@@ -77,8 +83,12 @@ class TaskListview extends StatelessWidget {
                         context: context,
                         task: task,
                         index: index,
-                        onSave: (updatedTask) {
-
+                        onSave: (updatedTask) async {
+                          homeController.tasksList[index].title = updatedTask[TasksService.title];
+                          homeController.tasksList[index].endTime = updatedTask[TasksService.endTime];
+                          homeController.tasksList[index].startTime = updatedTask[TasksService.startTime];
+                          await homeController.updateTask(task.id, updatedTask);
+                          homeController.update();
                         },
                       );
                     },
@@ -120,10 +130,9 @@ class TaskListview extends StatelessWidget {
           InkWell(
             onTap: () {
               onSave({
-                'title': taskNameController.text,
-                'start_time': txtStartTimeController.text,
-                'end_time': txtEndTimeController.text,
-                'currenttimeinmillis': '${DateTime.now().millisecondsSinceEpoch}',
+                TasksService.title: taskNameController.text,
+                TasksService.startTime: txtStartTimeController.text,
+                TasksService.endTime: txtEndTimeController.text
               });
               Navigator.pop(context);
             },

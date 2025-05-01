@@ -49,7 +49,7 @@ class DashboardScreen extends StatelessWidget {
               padding: EdgeInsets.all(0),
               child: IconButton(
                 onPressed: () {
-                 // showBlockAppDialog(context);
+                 showBlockAppDialog(context);
                 },
                 icon: Icon(Icons.lock,size: 25,color: Theme.of(context).iconTheme.color,),
               ),

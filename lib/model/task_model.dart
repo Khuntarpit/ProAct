@@ -1,9 +1,9 @@
 
 class TaskModel {
   final int id;
-  final String title;
-  final String startTime;
-  final String endTime;
+  String title;
+  String startTime;
+  String endTime;
   int status;
   final String createdBy;
   final DateTime createdAt;

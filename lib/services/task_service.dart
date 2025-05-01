@@ -17,7 +17,7 @@ class TasksService {
   static var endTime = "end_time";
   static var status = "status";
 
-  static insertUser(task)async{
+  static insertTask(task)async{
     final insertResponse = await client
         .from(tasks)
         .insert(task);
@@ -82,5 +82,24 @@ class TasksService {
     }
   }
 
+  static updateTask(taskId,task)async{
+    final insertResponse = await client
+        .from(tasks)
+        .update(task)
+    .eq(id, taskId);
+    return insertResponse;
+  }
 
+  static Future deleteTask(taskId) async {
+    try {
+      final data = await Supabase.instance.client
+          .from(tasks)
+          .delete()
+          .eq(id, taskId);
+      return data;
+    } catch (e) {
+      print('❗ Error getting tasks: $e');
+      throw Exception('Error getting tasks: $e');
+    }
+  }
 }
