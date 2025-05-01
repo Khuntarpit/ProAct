@@ -146,7 +146,7 @@ class TaskChartRow extends StatelessWidget {
                Text(
                  "$label\nTask",
                  textAlign: TextAlign.center,
-                 style: const TextStyle(fontSize: 16),
+                 style: const TextStyle(fontSize: 14),
                ),
              ],
            ),
