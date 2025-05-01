@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:calendar_day_view/calendar_day_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:proact/model/task_model.dart';
 import 'package:proact/services/task_service.dart';
 import 'package:proact/services/user_service.dart';
 import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
@@ -12,20 +14,20 @@ class HomeController extends GetxController {
   final Rx<DateTime> selectedDate = DateTime.now().obs;
   RxString userEmail = ''.obs;
   RxString emailPrefix = ''.obs;
-  RxList<Map<String, dynamic>> eventData = <Map<String, dynamic>>[].obs;
   RxInt currentIndex = 0.obs;
   Rx<bool> isLoading = false.obs;
-  RxList<Map<String, dynamic>> tasksList = <Map<String, dynamic>>[].obs;
+  List<TaskModel> tasksList = <TaskModel>[];
 
   Future<void> loadUserTasks() async {
     isLoading.value = true;
     try {
       var data = await TasksService.getTasks();
-      tasksList.value = List<Map<String, dynamic>>.from(data);
+      tasksList = data.map((e) => TaskModel.fromJson(e),).toList();
       print("✅ Fetched tasks: ${tasksList}");
+      update();
     } catch (e) {
       print('❗ Error fetching tasks: $e');
-      tasksList.value = [];
+      tasksList = [];
     } finally {
       isLoading.value = false;
     }
@@ -33,7 +35,6 @@ class HomeController extends GetxController {
 
   Future<void> updateTaskStatus(taskId, newStatus) async {
     await TasksService.updateTaskStatus(taskId, newStatus);
-    loadUserTasks();
   }
 
   @override
@@ -62,11 +63,7 @@ class HomeController extends GetxController {
                 e['created_by'] = user.userId;
                 return e;
               }).toList();
-              eventData.addAll(data2);
               saveEventData(data2);
-              Future.delayed(Duration(seconds: 5), () {
-                loadUserTasks();
-              });
             },
             eventId: eventId,
           ),
@@ -76,21 +73,9 @@ class HomeController extends GetxController {
   }
 
   Future<void> saveEventData(eventData) async {
-
-    final supabase = Supabase.instance.client;
-
-    String eventDataJson = jsonEncode(eventData);
-
-    await Get.find<MethodChannelController>().saveEvents(eventDataJson);
-
     try {
-      final response = await supabase.from('Tasks').insert(eventData);
-
-      if (response.error != null) {
-        print('❗ Supabase error: ${response.error!.message}');
-      } else {
-        print('✅ Data saved to Supabase: ${response.data}');
-      }
+      await TasksService.insertUser(eventData);
+      loadUserTasks();
     } catch (e) {
       print('❗ Exception saving to Supabase: $e');
     }
@@ -100,19 +85,19 @@ class HomeController extends GetxController {
     List<DayEvent<String>> dayEvents = [];
     DateTime now = DateTime.now();
 
-    for (var event in eventData) {
+    for (var event in tasksList) {
       try {
-        String startTime = event["start_time"] as String;
+        String startTime = event.startTime;
         var startSplit = startTime.split(":");
         int startHour = int.parse(startSplit[0]);
         int startMinutes = int.parse(startSplit[1].substring(0, 2));
 
-        String endTime = event["end_time"] as String;
+        String endTime = event.endTime;
         var endSplit = endTime.split(":");
         int endHour = int.parse(endSplit[0]);
         int endMinutes = int.parse(endSplit[1].substring(0, 2));
 
-        String title = event["title"] as String;
+        String title = event.title;
 
         dayEvents.add(DayEvent<String>(
           start: DateTime(now.year, now.month, now.day, startHour, startMinutes),

@@ -1,36 +1,20 @@
 import 'package:get/get.dart';
 
+import '../services/task_service.dart';
+
 class DashboardController extends GetxController {
-  var eventData = <Map<String, dynamic>>[].obs;
-  var progressValue = 0.0.obs;
+  Rx<int> totalTask = 0.obs;
+  Rx<int> completedTask = 0.obs;
 
-  void deleteEvent(int index) {
-    eventData.removeAt(index);
-    updateProgress();
+  void updateProgress() async {
+    var data = await TasksService.getTaskCounts();
+    totalTask.value = data['total'];
+    completedTask.value = data['completed'];
   }
 
-  void saveEvent(int index, Map<String, dynamic> updatedEvent) {
-    eventData[index] = updatedEvent;
+  @override
+  void onInit() {
     updateProgress();
-  }
-
-  void markEventAsDone(int index, int done) {
-    eventData[index]['doneStatus'] = done;
-    updateProgress();
-  }
-
-  void updateProgress() {
-    int total = eventData.length;
-    if (total == 0) {
-      progressValue.value = 0;
-      return;
-    }
-    int doneCount = eventData.where((e) => e['doneStatus'] == 'true').length;
-    progressValue.value = doneCount / total;
-  }
-
-  void setEvents(List<Map<String, dynamic>> events) {
-    eventData.assignAll(events);
-    updateProgress();
+    super.onInit();
   }
 }

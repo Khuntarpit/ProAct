@@ -31,7 +31,7 @@ class EventCalenderNew extends HookWidget {
                   ),
                 ),
               ),
-              height: MediaQuery.of(context).size.height * 0.25,
+              height: 120,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -46,13 +46,13 @@ class EventCalenderNew extends HookWidget {
 
             ),
             Padding(
-              padding:  EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.20),
+              padding:  EdgeInsets.only(top: 100),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   color: Theme.of(context).scaffoldBackgroundColor
                 ),
-                height: MediaQuery.of(context).size.height * 0.70,
+                height: MediaQuery.of(context).size.height * 0.80,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

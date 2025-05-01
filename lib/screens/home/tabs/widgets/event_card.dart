@@ -2,27 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:proact/model/task_model.dart';
 import '../../../../controller/home_controller.dart';
 import '../../../../core/value/app_colors.dart';
 
 class EventCard extends StatelessWidget {
-  final Map<String, dynamic> event;
+  final TaskModel task;
   final Function onDelete;
   final Function onEdit;
   final Function showGeminiPrompt;
-  final Function markAsDone;
-  final int id;
+  final VoidCallback markAsDone;
   final int index;
-  final int status;
   final int listLength;
 
   const EventCard(
       {super.key,
-        required this.id,
         required this.index,
-        required this.status,
         required this.listLength,
-        required this.event,
+        required this.task,
         required this.onDelete,
         required this.onEdit,
         required this.showGeminiPrompt,
@@ -53,7 +50,7 @@ class EventCard extends StatelessWidget {
                     Text("",style: TextStyle(color: Colors.grey),),
                   ],
                 ),
-                Text(event['start_time'] ?? '',style: TextStyle(fontSize: 15,color: Colors.grey),),
+                Text(task.startTime ?? '',style: TextStyle(fontSize: 15,color: Colors.grey),),
                 if(listLength-1 != index)
                 Column(
                   children: [
@@ -92,7 +89,7 @@ class EventCard extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                '${event['title']}' ?? '',
+                                '${task.title}' ?? '',
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: true,
                                 maxLines: 2,
@@ -103,7 +100,7 @@ class EventCard extends StatelessWidget {
                               ),
                             ),
                             SizedBox(width: 8,),
-                            if(event['doneStatus'] == 1 )
+                            if(task.status == 1 )
 
                             Padding(
                               padding: const EdgeInsets.only(right: 8.0),
@@ -135,7 +132,7 @@ class EventCard extends StatelessWidget {
                           Icon(Icons.schedule, color: Colors.blueAccent, size: 20),
                           SizedBox(width: 8),
                           Text(
-                            'Time: ${event['start_time'] ?? ''} - ${event['end_time'] ?? ''}',
+                            'Time: ${task.startTime} - ${task.endTime}',
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                             ),
@@ -152,12 +149,6 @@ class EventCard extends StatelessWidget {
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // IconButton(
-                      //   icon: Icon(Icons.message_rounded, size: 18),
-                      //   onPressed: () {
-                      //     showGeminiPrompt();
-                      //   },
-                      // ),
                       GestureDetector(
                         onTap: () {
                           onEdit();
@@ -177,14 +168,12 @@ class EventCard extends StatelessWidget {
                       ),
                       SizedBox(height: 12,),
 
+
                       GestureDetector(
-                        onTap: () {
-                          HomeController controller = Get.find();
-                          controller.updateTaskStatus(id, status == 0 ? 1 : 0);
-                        },
+                        onTap: markAsDone,
                         child: SvgPicture.asset(
-                          status == 0 ?
-                          "assets/icons/grey_check_icon.svg"
+                          task.status == 0
+                          ?"assets/icons/grey_check_icon.svg"
                           :"assets/icons/green_check_icon.svg"
                         ),
                       ),

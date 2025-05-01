@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:proact/controller/dashbord_controller.dart';
+import 'package:proact/controller/home_controller.dart';
 
 import 'dart:math';
 
@@ -242,20 +247,66 @@ class FullCircleForegroundPainter extends CustomPainter {
 }
 
 
-class chartScreen extends StatelessWidget {
-  const chartScreen({super.key});
 
+class TaskChart extends StatelessWidget {
+   TaskChart({super.key});
+ DashboardController dashboardController = Get.find();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: TaskChartRow(
-          totalTask: 100,
-          completedTask: 80,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10),
+      child: Container(
+        padding: EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color:Theme.of(context).iconTheme.color == AppColors.kblack
+                  ?Colors.grey.withOpacity(0.4)
+                  :Colors.black.withOpacity(0.5),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            )
+          ],
+          color: Theme.of(context).iconTheme.color == AppColors.kblack ? Colors.white :Colors.black,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: GetBuilder<HomeController>(
+          builder: (controller) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  controller.tasksList.length < 4
+                      ? 'You Have a Pretty Light Day'
+                      : 'You Have a Pretty Busy Day',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 15),
+                Row(
+                  children: [
+                    Icon(Icons.work, size: 16),
+                    SizedBox(width: 4),
+                    Text(
+                      '${controller.tasksList.length} tasks',
+                      style: TextStyle(fontSize: 17),
+                    ),
+                    SizedBox(width: 20),
+                  ],
+                ),
+                Obx(() =>  TaskChartRow(
+                  totalTask: dashboardController.totalTask.value,
+                  completedTask: dashboardController.completedTask.value,
+                ),)
+               ,
+                SizedBox(height: 8),
+              ],
+            );
+          }
         ),
       ),
-
     );
   }
 }
-

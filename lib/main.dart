@@ -3,7 +3,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:proact/blockapps/services/init.dart';
+import 'package:proact/controller/home_controller.dart';
 import 'package:proact/controller/theme_controller.dart';
+import 'package:proact/services/task_service.dart';
+import 'package:proact/services/user_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'constants/constants.dart';
@@ -15,6 +18,7 @@ import 'routes/screens.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await initialize();
 

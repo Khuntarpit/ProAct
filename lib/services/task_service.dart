@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
+import 'package:proact/model/task_model.dart';
 import 'package:proact/services/user_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../controller/dashbord_controller.dart';
 
 class TasksService {
 
@@ -14,6 +17,13 @@ class TasksService {
   static var endTime = "end_time";
   static var status = "status";
 
+  static insertUser(task)async{
+    final insertResponse = await client
+        .from(tasks)
+        .insert(task);
+    return insertResponse;
+  }
+
   static Future<List<Map<String, dynamic>>> updateTaskStatus(int taskId, int newStatus) async {
     final supabase = Supabase.instance.client;
     try {
@@ -21,7 +31,7 @@ class TasksService {
           .from(tasks)
           .update({status: newStatus})
           .eq(id, taskId)
-          .select(); // Add this to get updated data back
+          .select();
 
       print('✅ Task status updated: $response');
       return response;
@@ -38,11 +48,37 @@ class TasksService {
       final data = await Supabase.instance.client
           .from(tasks)
           .select()
-          .eq(createdBy, userId);
+          .eq(createdBy, userId)
+          .order('start_time', ascending: true); // 👈 sort by start_time
       return data;
     } catch (e) {
-      print('❗ Error updating task status: $e');
-      throw Exception('Error getting task status: $e');
+      print('❗ Error getting tasks: $e');
+      throw Exception('Error getting tasks: $e');
+    }
+  }
+
+  static Future<Map> getTaskCounts() async {
+    try {
+      final user = await UserService.getCurrentUserData();
+      final userId = user.userId;
+
+      final response = await Supabase.instance.client
+          .from(tasks)
+          .select('id, status')
+          .eq(createdBy, userId);
+
+      final List<Map<String, dynamic>> task = List<Map<String, dynamic>>.from(response);
+
+      final totalCount = task.length;
+      final completedCount = task.where((task) => task['status'] == 1).length;
+
+      return {
+        'total': totalCount,
+        'completed': completedCount,
+      };
+    } catch (e) {
+      print('❗ Error getting task counts: $e');
+      throw Exception('Error getting task counts: $e');
     }
   }
 
