@@ -41,7 +41,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Text(
                 'Please enter an email address and password to create your account.',
                 style: GoogleFonts.poppins(
-                  fontSize: 15,
+                  fontSize: 13,
                   color: Colors.grey,
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:proact/controller/home_controller.dart';
+import 'package:proact/custom_elements/custom_elements.dart';
 import 'package:proact/model/task_model.dart';
 
 import '../../../../controller/dashbord_controller.dart';
@@ -23,7 +24,7 @@ class TaskListview extends StatelessWidget {
           child: Text(
             'List Of Tasks',
             style: GoogleFonts.poppins(
-              fontSize: 18,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -39,12 +40,12 @@ class TaskListview extends StatelessWidget {
               ),
             )
                 : homeController.tasksList.isEmpty
-                ? const Padding(
+                ?  Padding(
               padding: EdgeInsets.only(top: 50),
               child: Center(
                 child: Text(
                   "No Task",
-                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                  style: TextStyle(color: Colors.grey, fontSize: 13),
                 ),
               ),
             )

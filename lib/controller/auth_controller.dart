@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:proact/services/task_service.dart';
 import 'package:proact/services/user_service.dart';
+import 'package:proact/utils/app_urls.dart';
+import 'package:proact/utils/custom_image_picker.dart';
 import 'package:proact/utils/hive_store_util.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../model/user_model.dart';
 import '../routes/routes.dart';
 import '../utils/utils.dart';
+import 'dashbord_controller.dart';
 
 class AuthController extends GetxController {
   final emailController = TextEditingController();
@@ -18,6 +22,18 @@ class AuthController extends GetxController {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final client = Supabase.instance.client;
+  final RxString imagePath = "${AppUrls.image_url}${HiveStoreUtil.getString(HiveStoreUtil.photo)}".obs;
+
+  Future<void> pickAndUploadImage() async {
+    File? file = await CustomImagePicker().pickProfilePicture();
+    if(file != null){
+      try {
+        imagePath.value = file.path;
+      } catch (e) {
+        Get.snackbar('Error', 'Image upload failed: $e');
+      }
+    }
+  }
 
   Future<void> login() async {
     final email = emailController.text.trim();
@@ -153,8 +169,19 @@ class AuthController extends GetxController {
   }) async {
     Utils.showLoading();
     try {
+      if(photoUrl.isNotEmpty && (!photoUrl.startsWith("https"))){
+        final filePath = 'public/${DateTime.now().millisecond}.${photoUrl.split(".").last}';
+
+        final uploadResponse = await Supabase.instance.client.storage
+            .from('images')
+            .upload(filePath, File(photoUrl));
+        photoUrl = uploadResponse;
+      } else {
+        photoUrl = "images/${photoUrl.split("/images/").last}";
+      }
+
       var response = await UserService.updateProfile(firstName: firstName, lastName: lastName, photoUrl: photoUrl, newEmail: newEmail);
-      Get.back();
+      Get.back(result: true);
       Utils.closeLoading();
 
       if (response.error != null) {

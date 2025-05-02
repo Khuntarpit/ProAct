@@ -8,14 +8,15 @@ import 'package:proact/screens/home/tabs/widgets/task_chart.dart';
 import 'package:proact/screens/home/tabs/widgets/task_listview.dart';
 import 'package:proact/services/task_service.dart';
 import 'package:proact/services/user_service.dart';
+import 'package:proact/utils/app_urls.dart';
 import 'package:proact/utils/hive_store_util.dart';
 import '../../../controller/home_controller.dart';
 import '../../../controller/dashbord_controller.dart';
+import '../../../model/user_model.dart';
 
 class DashboardScreen extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
   final HomeController homeController = Get.put(HomeController());
-
 
   @override
   Widget build(BuildContext context) {
@@ -24,26 +25,32 @@ class DashboardScreen extends StatelessWidget {
       appBar: AppBar(
         leading: null,
         backgroundColor: Colors.transparent,
-        title: Row(
-          children: [
-            InkWell(
-              onTap: () => Get.toNamed(Routes.profileScreen),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: CircleAvatar(
-                 backgroundImage: NetworkImage("https://c1.35photo.pro/profile/photos/192/963119_140.jpg"),
+        title: GetBuilder<DashboardController>(builder: (controller) {
+          UserModel user = UserService.getCurrentUserData();
+
+          return Row(
+            children: [
+              InkWell(
+                onTap: () => Get.toNamed(Routes.profileScreen),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(user.photo.isNotEmpty
+                        ? user.photo
+                        :"https://www.manageengine.com/images/speaker-placeholder.png"),
+                  ),
                 ),
               ),
-            ),
-            Text(
-              'Hi, ${HiveStoreUtil.getString(HiveStoreUtil.firstNameKey)}',
-              style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
+              Text(
+                'Hi, ${HiveStoreUtil.getString(HiveStoreUtil.firstNameKey)}',
+                style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },),
         actions: [
            Padding(
               padding: EdgeInsets.all(0),

@@ -1,3 +1,4 @@
+import 'package:proact/utils/app_urls.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../model/user_model.dart';
@@ -31,7 +32,7 @@ class UserService {
 
   static insertUser(UserModel user)async{
     final insertResponse = await client
-        .from(UserService.users)
+        .from(users)
         .insert(user.toMap());
 
     HiveStoreUtil.setString(HiveStoreUtil.emailKey, user.email ?? '');
@@ -80,7 +81,7 @@ class UserService {
     final userId = HiveStoreUtil.getString(HiveStoreUtil.userIdKey);
     final firstName = HiveStoreUtil.getString(HiveStoreUtil.firstNameKey);
     final lastName = HiveStoreUtil.getString(HiveStoreUtil.lastNameKey);
-    final photo = HiveStoreUtil.getString(HiveStoreUtil.photo);
+    final photo = "${AppUrls.image_url}${HiveStoreUtil.getString(HiveStoreUtil.photo)}";
     final password = HiveStoreUtil.getString(HiveStoreUtil.password);
 
     return UserModel(

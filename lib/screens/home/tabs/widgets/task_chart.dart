@@ -8,6 +8,7 @@ import 'package:proact/controller/home_controller.dart';
 import 'dart:math';
 
 import 'package:proact/core/value/app_colors.dart';
+import 'package:proact/custom_elements/custom_elements.dart';
 
 
 class TaskChartRow extends StatelessWidget {
@@ -59,8 +60,8 @@ class TaskChartRow extends StatelessWidget {
                   children: [
                     Text(
                       totalTask.toString().padLeft(2, '0'),
-                      style: const TextStyle(
-                        fontSize: 24,
+                      style:  TextStyle(
+                        fontSize: 20,
                         
                         fontWeight: FontWeight.bold,
                       ),
@@ -68,7 +69,7 @@ class TaskChartRow extends StatelessWidget {
                     Text(
                       "Total\nTask",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16),
+                      style:  TextStyle(fontSize: 13),
                     ),
 
                   ],
@@ -78,8 +79,8 @@ class TaskChartRow extends StatelessWidget {
                   children: [
                     Text(
                       pendingTask.toString().padLeft(2, '0'),
-                      style: const TextStyle(
-                        fontSize: 24,
+                      style:  TextStyle(
+                        fontSize: 20,
                         
                         fontWeight: FontWeight.bold,
                       ),
@@ -87,7 +88,7 @@ class TaskChartRow extends StatelessWidget {
                     Text(
                       "pending\nTask",
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16),
+                      style:  TextStyle(fontSize: 13),
                     ),
 
                   ],
@@ -138,15 +139,15 @@ class TaskChartRow extends StatelessWidget {
              children: [
                Text(
                  value.toString().padLeft(2, '0'),
-                 style: const TextStyle(
-                   fontSize: 28,
+                 style:  TextStyle(
+                   fontSize: 23,
                    fontWeight: FontWeight.bold,
                  ),
                ),
                Text(
                  "$label\nTask",
                  textAlign: TextAlign.center,
-                 style: const TextStyle(fontSize: 14),
+                 style:  TextStyle(fontSize: 13),
                ),
              ],
            ),
@@ -280,7 +281,7 @@ class TaskChart extends StatelessWidget {
                       ? 'You Have a Pretty Light Day'
                       : 'You Have a Pretty Busy Day',
                   style: GoogleFonts.poppins(
-                    fontSize: 16,
+                    fontSize: 11,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -291,7 +292,7 @@ class TaskChart extends StatelessWidget {
                     SizedBox(width: 4),
                     Text(
                       '${controller.tasksList.length} tasks',
-                      style: TextStyle(fontSize: 17),
+                      style: TextStyle(fontSize: 12),
                     ),
                     SizedBox(width: 20),
                   ],

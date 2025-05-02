@@ -53,7 +53,10 @@ class _ProActState extends State<ProAct> {
       return GetMaterialApp(
         title: 'ProAct+',
         builder: EasyLoading.init(
-          builder: (context, child) => child!,
+          builder: (context, child) => MediaQuery(
+            child: child!,
+            data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1)),
+          ),
         ),
         themeMode: themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
         theme: AppTheme.lightTheme,

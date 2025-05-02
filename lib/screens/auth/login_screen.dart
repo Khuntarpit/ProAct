@@ -19,15 +19,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '',
-          style: GoogleFonts.poppins(fontSize: 14,),
-        ),
-      ),
+
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0).add(
-          EdgeInsets.only(top: 120.0),
+        padding: const EdgeInsets.all(25.0).add(
+          EdgeInsets.only(top: 160.0),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Text(
               'Login',
               style: GoogleFonts.poppins(
-                fontSize: 30,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -43,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Text(
               'Please enter an email address and password to Log In to your account.',
               style: GoogleFonts.poppins(
-                fontSize: 16,
+                fontSize: 13,
                 color: Colors.grey,
               ),
             ),
@@ -183,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           "Forgot Password?",
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 13,
                             color: Theme.of(context).iconTheme.color
                           ),
                         ),

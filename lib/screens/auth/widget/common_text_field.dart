@@ -22,14 +22,14 @@ class CommonTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 17)),
+        Text(label, style: const TextStyle(fontSize: 13)),
         const SizedBox(height: 10),
         TextFormField(
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintStyle: const TextStyle(color: Colors.grey,fontSize: 12),
 
             contentPadding:
             const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),

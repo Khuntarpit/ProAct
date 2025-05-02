@@ -25,9 +25,9 @@ class TasksService {
   }
 
   static Future<List<Map<String, dynamic>>> updateTaskStatus(int taskId, int newStatus) async {
-    final supabase = Supabase.instance.client;
+
     try {
-      final response = await supabase
+      final response = await client
           .from(tasks)
           .update({status: newStatus})
           .eq(id, taskId)
@@ -45,7 +45,7 @@ class TasksService {
     try {
       final user = await UserService.getCurrentUserData();
       final userId = user.userId;
-      final data = await Supabase.instance.client
+      final data = await client
           .from(tasks)
           .select()
           .eq(createdBy, userId)
@@ -62,7 +62,7 @@ class TasksService {
       final user = await UserService.getCurrentUserData();
       final userId = user.userId;
 
-      final response = await Supabase.instance.client
+      final response = await client
           .from(tasks)
           .select('id, status')
           .eq(createdBy, userId);
@@ -92,7 +92,7 @@ class TasksService {
 
   static Future deleteTask(taskId) async {
     try {
-      final data = await Supabase.instance.client
+      final data = await client
           .from(tasks)
           .delete()
           .eq(id, taskId);

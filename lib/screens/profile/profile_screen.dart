@@ -1,8 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:proact/controller/auth_controller.dart';
+import 'package:proact/controller/dashbord_controller.dart';
 import 'package:proact/controller/theme_controller.dart';
 import 'package:proact/model/user_model.dart';
 import 'package:proact/routes/routes.dart';
@@ -20,10 +21,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   ThemeController controller = Get.put(ThemeController());
   AuthController authController = Get.put(AuthController());
-  UserModel user = UserService.getCurrentUserData();
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -35,53 +36,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: ListView(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Stack(
-              children: [
-                Container(
-                  child: Row(
-                    children: [
-                      SizedBox(width: 170,),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0,top: 20,right: 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${user.firstName} ${user.lastName}",style: TextStyle(fontSize: 19,color: Colors.white),),
-                            SizedBox(height: 8,),
-                            Text(user.email,style: TextStyle(fontSize: 15,color: Colors.white),),
-                          ],
+          GetBuilder<DashboardController>(builder: (controller) {
+            UserModel user = UserService.getCurrentUserData();
+
+            return Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Stack(
+                children: [
+                  Container(
+                    child: Row(
+                      children: [
+                        SizedBox(width: 170,),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0,top: 20,right: 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${user.firstName} ${user.lastName}",style: TextStyle(fontSize: 15,color: Colors.white),),
+                              SizedBox(height: 8,),
+                              Text(user.email,style: TextStyle(fontSize: 13,color: Colors.white),),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  width: double.infinity,
-                  height: 110,
-                  decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(50),
-                        bottomRight: Radius.circular(20),
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      )
+                      ],
+                    ),
+                    width: double.infinity,
+                    height: 110,
+                    decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(50),
+                          bottomRight: Radius.circular(20),
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        )
 
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0,left: 25),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    backgroundImage: NetworkImage("https://c1.35photo.pro/profile/photos/192/963119_140.jpg"),
-                    radius: 70,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0, left: 25),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      backgroundImage: CachedNetworkImageProvider(
+                          user.photo.isNotEmpty
+                              ? user.photo
+                              :"https://www.manageengine.com/images/speaker-placeholder.png"),
+                      radius: 70,
+                    ),
                   ),
-                )
-
-              ],
-            ),
-          ),
+                ],
+              ),
+            );
+          },),
           SizedBox(height: 20,),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -91,7 +98,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildTile(
             icon: Icons.person,
             title: 'My Profile',
-            onTap: () => Get.toNamed(Routes.editProfileScreen),
+            onTap: () async {
+              var data = await Get.toNamed(Routes.editProfileScreen);
+              if(data == true){
+                DashboardController ctrl = Get.find();
+                ctrl.update();
+              }
+            },
           ),
           _buildTile(
             icon: Icons.notifications,
@@ -108,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             leading: Icon(Icons.brightness_6, color: Theme.of(context).iconTheme.color),
             title: Text(
               'App Appearance',
-              style: TextStyle(fontSize: 20,color: Theme.of(context).textTheme.bodyLarge?.color),
+              style: TextStyle(fontSize: 16,color: Theme.of(context).textTheme.bodyLarge?.color),
             ),
             trailing: CupertinoSwitch(
               activeColor: Colors.grey,
@@ -170,7 +183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         ListTile(
           leading: Icon(icon, color: Theme.of(context).iconTheme.color),
-          title: Text(title, style: TextStyle(fontSize:20,color: Theme.of(context).textTheme.bodyLarge?.color)),
+          title: Text(title, style: TextStyle(fontSize:16,color: Theme.of(context).textTheme.bodyLarge?.color)),
           trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Theme.of(context).iconTheme.color),
           onTap: onTap,
         ),
@@ -203,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 10),
               const Text(
                 'Are you sure you want to log out?',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 13),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),

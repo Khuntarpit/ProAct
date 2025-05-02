@@ -40,7 +40,7 @@ class OverflowDayViewTab extends HookWidget {
                 ).toList(),
               ),
               onTimeTap: onTimeTap ?? print,
-              timeTextStyle: TextStyle(color: Theme.of(context).iconTheme.color, fontSize: 14),
+              timeTextStyle: TextStyle(color: Theme.of(context).iconTheme.color, fontSize: 11),
               dividerColor: Theme.of(context).iconTheme.color,
               timeGap: timeGap.value,
               heightPerMin: 1.2,
@@ -80,6 +80,7 @@ class OverflowDayViewTab extends HookWidget {
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.fade,
                           style: const TextStyle(
+                            fontSize: 11,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),

@@ -25,8 +25,8 @@ class EventCalenderNew extends HookWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Planner",style: TextStyle(fontSize: 23,fontWeight: FontWeight.bold,color: Colors.white),),
-                      Text("Plan time on your calendar to scieve your results",style: TextStyle(fontSize: 16,color: Colors.white),),
+                      Text("Planner",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.white),),
+                      Text("Plan time on your calendar to scieve your results",style: TextStyle(fontSize: 13,color: Colors.white),),
                     ],
                   ),
                 ),
@@ -82,7 +82,7 @@ class EventCalenderNew extends HookWidget {
           controller.selectedDate.value = selectedDate; // Update reactive date
         },
         dayProps: EasyDayProps(
-          todayNumStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 24),
+          todayNumStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
           activeDayStyle: DayStyle(
             dayNumStyle: TextStyle(color: Theme.of(con).scaffoldBackgroundColor),
           ),
