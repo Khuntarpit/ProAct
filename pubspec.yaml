@@ -47,14 +47,22 @@ dependencies:
   calendar_day_view: ^3.3.2
   flutter_hooks: ^0.20.5
   get: ^4.6.5
-  fluttertoast: ^8.0.9
+  fluttertoast: ^8.2.11
   device_apps: ^2.2.0
   permission_handler: ^11.3.1
-  usage_stats: ^1.2.0
+  usage_stats: ^1.2.1
   flutter_switch: ^0.3.2
   lottie: ^3.1.0
   html: ^0.15.0
-  
+  hive_flutter:
+  flutter_easyloading:
+  easy_date_timeline:
+  flutter_svg:
+  cached_network_image:
+  share_plus:
+  image_cropper:
+  image_picker:
+
 
 dev_dependencies:
   flutter_test:
