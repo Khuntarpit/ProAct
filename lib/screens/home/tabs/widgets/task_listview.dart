@@ -22,7 +22,7 @@ class TaskListview extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(15.0),
           child: Text(
-            'List Of Tasks',
+            'Today',
             style: GoogleFonts.poppins(
               fontSize: 14,
               fontWeight: FontWeight.bold,

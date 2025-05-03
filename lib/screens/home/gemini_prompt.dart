@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,6 +26,7 @@ class GeminiPrompt extends StatefulWidget {
 class _GeminiPromptState extends State<GeminiPrompt> {
   final TextEditingController _controller = TextEditingController();
   String _response = '';
+  String _message = '';
   HttpService httpService = HttpService();
 
   Future<void> _submitEventPromptToGemini(String prompt) async {
@@ -268,105 +270,144 @@ class _GeminiPromptState extends State<GeminiPrompt> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       // Set background color to white
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
-              reverse: true, // Start scrolling from the bottom
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Display prompt sent to Gemini
-                  if (_response.isNotEmpty)
-                    Container(
-                      margin: EdgeInsets.only(bottom: 10.0),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 16.0),
-                      decoration: BoxDecoration(
-                        color: Colors.blueGrey[100],
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Text('You: ${_controller.text}'),
-                    ),
+      backgroundColor: Colors.transparent,
 
-                  // Display response received from Gemini
-                  if (_response.isNotEmpty)
-                    Container(
-                      margin: EdgeInsets.only(bottom: 10.0),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 16.0),
-                      decoration: BoxDecoration(
-                        color: Colors.blueGrey[100],
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Text('AI response: $_response'),
-                    ),
-                ],
+       // Set background color to white
+      body: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: Get.theme.iconTheme.color == Colors.black ? Colors.black : Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(25))
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(17.0),
+                child: Row(
+                  children: [
+                    Icon(CupertinoIcons.chat_bubble_text_fill,color: Get.theme.scaffoldBackgroundColor,size: 25,),
+                    SizedBox(width: 15,),
+                    Text("ProAct Ai",style: TextStyle(color: Get.theme.scaffoldBackgroundColor,fontWeight: FontWeight.w500,fontSize: 16),)
+                  ],
+                ),
               ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            decoration: BoxDecoration(
-              // color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(10)
-              // BorderRadius.only(
-              //   topLeft: Radius.circular(10.0),
-              //   topRight: Radius.circular(10.0),
-              // ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(16.0),
+                reverse: true, // Start scrolling from the bottom
+                child: Column(
+                  // crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // Display prompt sent to Gemini
+                    if (_message.isNotEmpty)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(bottom: 10.0),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 16.0),
+                            decoration: BoxDecoration(
+                              color: Get.theme.iconTheme.color,
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                            child: Text('${_message}: You',style: TextStyle(color: Get.theme.scaffoldBackgroundColor,fontSize: 15),),
+                          ),
+                        ],
+                      ),
+
+                    // Display response received from Gemini
+                    if (_response.isNotEmpty)
+                      Container(
+                        constraints: BoxConstraints(
+                          maxWidth: MediaQuery.of(context).size.width * 0.7
+                        ),
+                        // width: ,
+                        margin: EdgeInsets.only(bottom: 10.0),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          color: Color(0xffd5d5d5),
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        child: Text('AI response: $_response',style: TextStyle(color: Colors.black,fontSize: 15)),
+                      ),
+                  ],
+                ),
+              ),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(fontSize: 18),
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.black,width: 2),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Container(
+                // padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 3.0),
+                decoration: BoxDecoration(
+                  // color: Theme.of(context).primaryColor,
+                  border: Border.all(color: Get.theme.iconTheme.color ?? Colors.black),
+                  borderRadius: BorderRadius.circular(50)
+                  // BorderRadius.only(
+                  //   topLeft: Radius.circular(10.0),
+                  //   topRight: Radius.circular(10.0),
+                  // ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: TextField(
+                          style: TextStyle(fontSize: 15),
+                          controller: _controller,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            hintText: 'Enter Your Tasks',
+                            hintStyle: TextStyle(fontSize: 15),
+                            isCollapsed: true, // Optional: removes extra padding
+                          ),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.black,width: 1),
-                      ),
-                      hintText: 'Enter Your Tasks',
                     ),
-                  ),
+                    SizedBox(width: 10.0),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Get.theme.iconTheme.color,
+                        borderRadius: BorderRadius.horizontal(right: Radius.circular(50))
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.send, color: Get.theme.scaffoldBackgroundColor,size: 20,),
+                        onPressed: () {
+                          if (_controller.text.isNotEmpty) {
+                            _message = _controller.text;
+                            if (widget.eventId >= 0) {
+                              _submitEventPromptToGemini(_controller.text);
+                            } else {
+                              _submitCreateEventPromptToGemini(_controller.text);
+                            }
+                            HomeController controller = Get.find();
+                            controller.loadUserTasks();
+                          }
+                        },
+                      ),
+                    ),
+
+                  ],
                 ),
-                SizedBox(width: 10.0),
-                Container(
-                  width: 50.0,
-                  height: 50.0,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.send, color: Colors.black),
-                    onPressed: () {
-                      if (_controller.text.isNotEmpty) {
-                        if (widget.eventId >= 0) {
-                          _submitEventPromptToGemini(_controller.text);
-                        } else {
-                          _submitCreateEventPromptToGemini(_controller.text);
-                        }
-                        HomeController controller = Get.find();
-                        controller.loadUserTasks();
-                      }
-                    },
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

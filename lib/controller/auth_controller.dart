@@ -39,45 +39,59 @@ class AuthController extends GetxController {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     Utils.showLoading();
-    try{
+
+    try {
       final response = await client.auth.signInWithPassword(
         email: email,
         password: password,
       );
+
       if (response.user != null) {
         final uid = response.user!.id;
         await UserService.checkUser(uid);
         Utils.closeLoading();
         Get.offAllNamed(Routes.homeScreen);
       } else {
+        // Shouldn't really happen, but just in case
         Utils.closeLoading();
-        print('❌ Login failed');
+        Utils.showToast('Login failed. Please try again.');
       }
-    } on AuthException catch (e){
+    } on AuthException catch (e) {
       Utils.closeLoading();
-      Utils.showToast("${e.message}");
-    } catch (e){
+
+      // Friendly error messages
+      if (e.message.contains('Invalid login credentials')) {
+        Utils.showToast('Incorrect email or password.');
+      } else {
+        Utils.showToast('${e.message}');
+      }
+    } catch (e) {
       Utils.closeLoading();
-      Utils.showToast("${e}");
+      Utils.showToast('An unexpected error occurred: $e');
     }
   }
+
 
   Future<void> signup() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final firstName = firstNameController.text.trim();
     final lastName = lastNameController.text.trim();
-    Utils.showLoading();
-    try{
 
+    Utils.showLoading();
+
+    try {
       final response = await client.auth.signUp(
         email: email,
         password: password,
       );
-      if (response.user != null) {
-        final uid = response.user!.id;
 
-        final user = UserModel(
+      final user = response.user;
+
+      if (user != null) {
+        final uid = user.id;
+
+        final newUser = UserModel(
           userId: uid,
           email: email,
           firstName: firstName,
@@ -87,23 +101,27 @@ class AuthController extends GetxController {
         );
 
         try {
-          await UserService.insertUser(user);
+          await UserService.insertUser(newUser);
         } catch (e) {
-          print('❗ Exception saving to Supabase: $e');
+          // Insert into "Users" failed — show message
+          Utils.showToast("Failed to save user profile: $e");
         }
+
         Utils.closeLoading();
         Get.offAllNamed(Routes.homeScreen);
       } else {
-        print('❌ Signup failed');
+        Utils.closeLoading();
+        Utils.showToast("Signup failed. Please try again.");
       }
-    } on AuthException catch (e){
+    } on AuthException catch (e) {
       Utils.closeLoading();
       Utils.showToast("${e.message}");
-    } catch (e){
+    } catch (e) {
       Utils.closeLoading();
-      Utils.showToast("${e}");
+      Utils.showToast("Unexpected error: $e");
     }
   }
+
 
 
   Future<void> changePassword({

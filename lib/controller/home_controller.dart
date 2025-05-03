@@ -54,6 +54,7 @@ class HomeController extends GetxController {
 
   void showGeminiPrompt(BuildContext context, int eventId) {
     showModalBottomSheet(
+
       context: context,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -63,7 +64,6 @@ class HomeController extends GetxController {
             ? MediaQuery.of(context).size.height * 0.9
             : MediaQuery.of(context).size.height * 0.5;
         return  Container(
-          padding: const EdgeInsets.all(16.0),
           height: height,
           child: GeminiPrompt(
             onSubmit: (data) async{

@@ -79,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: CircleAvatar(
                       backgroundColor: Colors.grey,
                       backgroundImage: CachedNetworkImageProvider(
-                          user.photo.isNotEmpty
+                          user.photo == ""
                               ? user.photo
                               :"https://www.manageengine.com/images/speaker-placeholder.png"),
                       radius: 70,

@@ -35,7 +35,7 @@ class DashboardScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(user.photo.isNotEmpty
+                    backgroundImage: NetworkImage(user.photo == ""
                         ? user.photo
                         :"https://www.manageengine.com/images/speaker-placeholder.png"),
                   ),

@@ -276,27 +276,7 @@ class TaskChart extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  controller.tasksList.length < 4
-                      ? 'You Have a Pretty Light Day'
-                      : 'You Have a Pretty Busy Day',
-                  style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 15),
-                Row(
-                  children: [
-                    Icon(Icons.work, size: 16),
-                    SizedBox(width: 4),
-                    Text(
-                      '${controller.tasksList.length} tasks',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    SizedBox(width: 20),
-                  ],
-                ),
+
                 Obx(() =>  TaskChartRow(
                   totalTask: dashboardController.totalTask.value,
                   completedTask: dashboardController.completedTask.value,

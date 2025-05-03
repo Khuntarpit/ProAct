@@ -34,7 +34,7 @@ class UserService {
     final insertResponse = await client
         .from(users)
         .insert(user.toMap());
-
+    print("insertResponse=======$insertResponse");
     HiveStoreUtil.setString(HiveStoreUtil.emailKey, user.email ?? '');
     HiveStoreUtil.setString(HiveStoreUtil.userIdKey, user.userId);
     HiveStoreUtil.setString(HiveStoreUtil.firstNameKey, user.firstName ?? '');

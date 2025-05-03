@@ -55,13 +55,11 @@ class EventCard extends StatelessWidget {
                 children: [
                   Text(".",style: TextStyle(color: Colors.grey),),
                   Text(".",style: TextStyle(color: Colors.grey),),
-                  Text(".",style: TextStyle(color: Colors.grey),),
                 ],
               ),
               if(listLength == index)
                 Column(
                   children: [
-                    Text("",style: TextStyle(color: Colors.grey),),
                     Text("",style: TextStyle(color: Colors.grey),),
                     Text("",style: TextStyle(color: Colors.grey),),
                   ],
