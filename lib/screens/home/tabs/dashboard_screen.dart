@@ -35,7 +35,7 @@ class DashboardScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(user.photo == ""
+                    backgroundImage: NetworkImage(user.photo.isNotEmpty
                         ? user.photo
                         :"https://www.manageengine.com/images/speaker-placeholder.png"),
                   ),
@@ -75,10 +75,6 @@ class DashboardScreen extends StatelessWidget {
       ),
     );
   }
-
-
-
-
 
   Future showBlockAppDialog(BuildContext context) {
      return showDialog(

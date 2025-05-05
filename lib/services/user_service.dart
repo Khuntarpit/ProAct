@@ -34,7 +34,7 @@ class UserService {
     final insertResponse = await client
         .from(users)
         .insert(user.toMap());
-    print("insertResponse=======$insertResponse");
+
     HiveStoreUtil.setString(HiveStoreUtil.emailKey, user.email ?? '');
     HiveStoreUtil.setString(HiveStoreUtil.userIdKey, user.userId);
     HiveStoreUtil.setString(HiveStoreUtil.firstNameKey, user.firstName ?? '');
@@ -81,7 +81,7 @@ class UserService {
     final userId = HiveStoreUtil.getString(HiveStoreUtil.userIdKey);
     final firstName = HiveStoreUtil.getString(HiveStoreUtil.firstNameKey);
     final lastName = HiveStoreUtil.getString(HiveStoreUtil.lastNameKey);
-    final photo = "${AppUrls.image_url}${HiveStoreUtil.getString(HiveStoreUtil.photo)}";
+    final photo = HiveStoreUtil.getString(HiveStoreUtil.photo).isNotEmpty ? "${AppUrls.image_url}${HiveStoreUtil.getString(HiveStoreUtil.photo)}" : "";
     final password = HiveStoreUtil.getString(HiveStoreUtil.password);
 
     return UserModel(
