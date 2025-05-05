@@ -64,9 +64,9 @@ class DashboardScreen extends StatelessWidget {
 
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: RefreshIndicator(
+        onRefresh:() =>  homeController.loadUserTasks(),
+        child: ListView(
           children: [
             TaskChart(),
             TaskListview()
