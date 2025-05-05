@@ -7,6 +7,8 @@ import 'package:proact/model/task_model.dart';
 import 'package:proact/services/task_service.dart';
 import 'package:proact/services/user_service.dart';
 import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
+import 'package:proact/utils/hive_store_util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../screens/home/gemini_prompt.dart';
 import 'dashbord_controller.dart';
@@ -26,6 +28,8 @@ class HomeController extends GetxController {
       tasksList = data.map((e) => TaskModel.fromJson(e),).toList();
       print("✅ Fetched tasks: ${tasksList}");
       update();
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString(HiveStoreUtil.eventData, jsonEncode(tasksList.map((e) => e.toJson(),).toList()));
     } catch (e) {
       print('❗ Error fetching tasks: $e');
       tasksList = [];
