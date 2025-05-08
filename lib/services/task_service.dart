@@ -1,9 +1,7 @@
-import 'package:get/get.dart';
-import 'package:proact/model/task_model.dart';
+
 import 'package:proact/services/user_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../controller/dashbord_controller.dart';
 
 class TasksService {
 
@@ -40,47 +38,132 @@ class TasksService {
       throw Exception('Error updating task status: $e');
     }
   }
-
-  static Future<List<Map<String, dynamic>>> getTasks() async {
+  static Future<Map<String, List<Map<String, dynamic>>>> getCategorizedTasks() async {
     try {
       final user = await UserService.getCurrentUserData();
       final userId = user.userId;
+
       final data = await client
           .from(tasks)
           .select()
           .eq(createdBy, userId)
-          .order('start_time', ascending: true); // 👈 sort by start_time
-      return data;
+          .order(startTime, ascending: true); // Sorted by start_time
+
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+      final endOfWeek = startOfWeek.add(Duration(days: 6));
+      final startOfMonth = DateTime(now.year, now.month, 1);
+      final endOfMonth = DateTime(now.year, now.month + 1, 0);
+
+      List<Map<String, dynamic>> todayTasks = [];
+      List<Map<String, dynamic>> weeklyTasks = [];
+      List<Map<String, dynamic>> monthlyTasks = [];
+
+      for (var task in data) {
+        final createdAt = DateTime.parse(task['created_at']);
+        final createdDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
+
+        // Check if it's today
+        if (createdDate == today) {
+          todayTasks.add(task);
+        }
+
+        // Check if it's within this week
+        if (createdDate.isAfter(startOfWeek.subtract(Duration(days: 1))) &&
+            createdDate.isBefore(endOfWeek.add(Duration(days: 1)))) {
+          weeklyTasks.add(task);
+        }
+
+        // Check if it's within this month
+        if (createdDate.isAfter(startOfMonth.subtract(Duration(days: 1))) &&
+            createdDate.isBefore(endOfMonth.add(Duration(days: 1)))) {
+          monthlyTasks.add(task);
+        }
+      }
+
+      return {
+        'today': todayTasks,
+        'week': weeklyTasks,
+        'month': monthlyTasks,
+      };
     } catch (e) {
-      print('❗ Error getting tasks: $e');
-      throw Exception('Error getting tasks: $e');
+      print('❗ Error getting categorized tasks: $e');
+      throw Exception('Error getting categorized tasks: $e');
     }
   }
 
-  static Future<Map> getTaskCounts() async {
+
+
+
+
+  static Future<Map<String, Map<String, dynamic>>> getTaskCounts() async {
     try {
       final user = await UserService.getCurrentUserData();
       final userId = user.userId;
 
       final response = await client
           .from(tasks)
-          .select('id, status')
-          .eq(createdBy, userId);
+          .select('id, status, created_at, start_time')
+          .eq(createdBy, userId)
+          .order('start_time', ascending: true);
 
-      final List<Map<String, dynamic>> task = List<Map<String, dynamic>>.from(response);
+      final List<Map<String, dynamic>> allTasks = List<Map<String, dynamic>>.from(response);
 
-      final totalCount = task.length;
-      final completedCount = task.where((task) => task['status'] == 1).length;
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+      final endOfWeek = startOfWeek.add(Duration(days: 6));
+      final startOfMonth = DateTime(now.year, now.month, 1);
+      final endOfMonth = DateTime(now.year, now.month + 1, 0);
+
+      int todayTotal = 0, todayCompleted = 0;
+      int weekTotal = 0, weekCompleted = 0;
+      int monthTotal = 0, monthCompleted = 0;
+
+      for (var task in allTasks) {
+        final createdAt = DateTime.parse(task['created_at']);
+        final createdDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
+        final isCompleted = task['status'] == 1;
+
+        if (createdDate == today) {
+          todayTotal++;
+          if (isCompleted) todayCompleted++;
+        }
+
+        if (createdDate.isAfter(startOfWeek.subtract(Duration(days: 1))) &&
+            createdDate.isBefore(endOfWeek.add(Duration(days: 1)))) {
+          weekTotal++;
+          if (isCompleted) weekCompleted++;
+        }
+
+        if (createdDate.isAfter(startOfMonth.subtract(Duration(days: 1))) &&
+            createdDate.isBefore(endOfMonth.add(Duration(days: 1)))) {
+          monthTotal++;
+          if (isCompleted) monthCompleted++;
+        }
+      }
 
       return {
-        'total': totalCount,
-        'completed': completedCount,
+        'today': {
+          'total': todayTotal,
+          'completed': todayCompleted,
+        },
+        'week': {
+          'total': weekTotal,
+          'completed': weekCompleted,
+        },
+        'month': {
+          'total': monthTotal,
+          'completed': monthCompleted,
+        },
       };
     } catch (e) {
       print('❗ Error getting task counts: $e');
       throw Exception('Error getting task counts: $e');
     }
   }
+
 
   static updateTask(taskId,task)async{
     final insertResponse = await client

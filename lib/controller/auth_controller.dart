@@ -7,11 +7,9 @@ import 'package:proact/utils/app_urls.dart';
 import 'package:proact/utils/custom_image_picker.dart';
 import 'package:proact/utils/hive_store_util.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../model/user_model.dart';
 import '../routes/routes.dart';
 import '../utils/utils.dart';
-import 'dashbord_controller.dart';
 
 class AuthController extends GetxController {
   final emailController = TextEditingController();
@@ -71,7 +69,6 @@ class AuthController extends GetxController {
     }
   }
 
-
   Future<void> signup() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
@@ -121,8 +118,6 @@ class AuthController extends GetxController {
       Utils.showToast("Unexpected error: $e");
     }
   }
-
-
 
   Future<void> changePassword({
     required String oldPassword,

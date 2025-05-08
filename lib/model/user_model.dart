@@ -4,7 +4,7 @@ class UserModel {
   final String firstName;
   final String lastName;
   final String photo;
-  final String password; // ⚠️ Optional: avoid storing plaintext passwords in production
+  final String password; 
 
   UserModel({
     required this.userId,

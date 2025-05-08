@@ -249,45 +249,4 @@ class FullCircleForegroundPainter extends CustomPainter {
 
 
 
-class TaskChart extends StatelessWidget {
-   TaskChart({super.key});
- DashboardController dashboardController = Get.find();
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 10),
-      child: Container(
-        padding: EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color:Theme.of(context).iconTheme.color == AppColors.kblack
-                  ?Colors.grey.withOpacity(0.4)
-                  :Colors.black.withOpacity(0.5),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            )
-          ],
-          color: Theme.of(context).iconTheme.color == AppColors.kblack ? Colors.white :Colors.black,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: GetBuilder<HomeController>(
-          builder: (controller) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
 
-                Obx(() =>  TaskChartRow(
-                  totalTask: dashboardController.totalTask.value,
-                  completedTask: dashboardController.completedTask.value,
-                ),)
-               ,
-                SizedBox(height: 8),
-              ],
-            );
-          }
-        ),
-      ),
-    );
-  }
-}

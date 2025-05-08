@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:proact/blockapps/screens/home.dart';
 import 'package:proact/routes/routes.dart';
+import 'package:proact/screens/home/tabs/widgets/chart_tab_bar.dart';
 import 'package:proact/screens/home/tabs/widgets/task_chart.dart';
 import 'package:proact/screens/home/tabs/widgets/task_listview.dart';
 import 'package:proact/services/task_service.dart';
@@ -68,7 +69,7 @@ class DashboardScreen extends StatelessWidget {
         onRefresh:() =>  homeController.loadUserTasks(),
         child: ListView(
           children: [
-            TaskChart(),
+            ChartTabBar(),
             TaskListview()
           ],
         ),

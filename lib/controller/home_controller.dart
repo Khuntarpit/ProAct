@@ -2,14 +2,11 @@ import 'dart:convert';
 import 'package:calendar_day_view/calendar_day_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
+
 import 'package:proact/model/task_model.dart';
 import 'package:proact/services/task_service.dart';
 import 'package:proact/services/user_service.dart';
-import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
-import 'package:proact/utils/hive_store_util.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../screens/home/gemini_prompt.dart';
 import 'dashbord_controller.dart';
 
@@ -19,24 +16,46 @@ class HomeController extends GetxController {
   RxString emailPrefix = ''.obs;
   RxInt currentIndex = 0.obs;
   Rx<bool> isLoading = false.obs;
-  List<TaskModel> tasksList = <TaskModel>[];
+  Map<String, List<TaskModel>> tasksList = {
+    'today': [],
+    'week': [],
+    'month': [],
+  };
+  List<TaskModel> todayTasks = <TaskModel>[];
+  List<TaskModel> weeklyTasks = <TaskModel>[];
+  List<TaskModel> monthlyTasks = <TaskModel>[];
+
 
   Future<void> loadUserTasks() async {
     isLoading.value = true;
     try {
-      var data = await TasksService.getTasks();
-      tasksList = data.map((e) => TaskModel.fromJson(e),).toList();
-      print("✅ Fetched tasks: ${tasksList}");
+      Map<String, List<Map<String, dynamic>>> data = await TasksService.getCategorizedTasks();
+
+      tasksList = {
+        'today': data['today']!.map((e) => TaskModel.fromJson(e)).toList(),
+        'week': data['week']!.map((e) => TaskModel.fromJson(e)).toList(),
+        'month': data['month']!.map((e) => TaskModel.fromJson(e)).toList(),
+      };
+
+      todayTasks = tasksList['today']!;
+      weeklyTasks = tasksList['week']!;
+      monthlyTasks = tasksList['month']!;
+
+      print("✅ todayTasks: ${todayTasks.length} weeklyTasks : ${weeklyTasks.length} monthlyTasks :${monthlyTasks.length}");
+
       update();
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString(HiveStoreUtil.eventData, jsonEncode(tasksList.map((e) => e.toJson(),).toList()));
     } catch (e) {
       print('❗ Error fetching tasks: $e');
-      tasksList = [];
+      tasksList = {'today': [], 'week': [], 'month': []};
+      todayTasks = [];
+      weeklyTasks = [];
+      monthlyTasks = [];
     } finally {
       isLoading.value = false;
     }
   }
+
+
 
   Future<void> updateTaskStatus(taskId, newStatus) async {
     await TasksService.updateTaskStatus(taskId, newStatus);
@@ -100,7 +119,7 @@ class HomeController extends GetxController {
     List<DayEvent<String>> dayEvents = [];
     DateTime now = DateTime.now();
 
-    for (var event in tasksList) {
+    for (var event in todayTasks) {
       try {
         String startTime = event.startTime;
         var startSplit = startTime.split(":");

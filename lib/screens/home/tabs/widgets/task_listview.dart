@@ -54,12 +54,12 @@ class TaskListview extends StatelessWidget {
               return ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: homeController.tasksList.length,
+                itemCount: homeController.todayTasks.length,
                 itemBuilder: (context, index) {
-                  TaskModel task =  homeController.tasksList[index];
+                  TaskModel task =  homeController.todayTasks[index];
                   return EventCard(
                      index: index,
-                    listLength: homeController.tasksList.length,
+                    listLength: homeController.todayTasks.length,
                     task: task,
                     showGeminiPrompt: () {
                       homeController.showGeminiPrompt(context, index);
@@ -67,13 +67,13 @@ class TaskListview extends StatelessWidget {
                     onDelete: () async {
                       notifyService.cancelEventNotification(index);
                       await homeController.deleteTask(task.id,);
-                      homeController.tasksList.removeAt(index);
+                      homeController.todayTasks.removeAt(index);
                       homeController.update();
                       DashboardController contriller = Get.find();
                       contriller.updateProgress();
                     },
                     markAsDone: () async {
-                      homeController.tasksList[index].status = task.status == 0 ? 1 : 0;
+                      homeController.todayTasks[index].status = task.status == 0 ? 1 : 0;
                       await homeController.updateTaskStatus(task.id, task.status);
                       homeController.update();
                       DashboardController contriller = Get.find();
@@ -85,9 +85,9 @@ class TaskListview extends StatelessWidget {
                         task: task,
                         index: index,
                         onSave: (updatedTask) async {
-                          homeController.tasksList[index].title = updatedTask[TasksService.title];
-                          homeController.tasksList[index].endTime = updatedTask[TasksService.endTime];
-                          homeController.tasksList[index].startTime = updatedTask[TasksService.startTime];
+                          homeController.todayTasks[index].title = updatedTask[TasksService.title];
+                          homeController.todayTasks[index].endTime = updatedTask[TasksService.endTime];
+                          homeController.todayTasks[index].startTime = updatedTask[TasksService.startTime];
                           await homeController.updateTask(task.id, updatedTask);
                           homeController.update();
                         },
