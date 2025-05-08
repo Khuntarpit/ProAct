@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:proact/constants/image_path.dart';
+import 'package:proact/controller/home_controller.dart';
+import 'package:proact/utils/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../routes/routes.dart';
@@ -15,6 +17,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  HomeController homeController = Get.put(HomeController());
   void initState() {
     Future.delayed(const Duration(seconds: 2),() async{
       final user = Supabase.instance.client.auth.currentUser;
@@ -22,6 +25,9 @@ class _SplashScreenState extends State<SplashScreen> {
         Get.offNamed(Routes.loginScreen);
       } else {
         Get.offNamed(Routes.homeScreen);
+        if(homeController.yesterdayTasks.isNotEmpty){
+          showYesterdayUncompletedTasksDialog(context);
+        }
       }
     });
     super.initState();

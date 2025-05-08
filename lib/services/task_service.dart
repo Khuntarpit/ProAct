@@ -1,5 +1,7 @@
 
+import 'package:get/get.dart';
 import 'package:proact/services/user_service.dart';
+import 'package:proact/utils/utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -14,6 +16,7 @@ class TasksService {
   static var startTime = "start_time";
   static var endTime = "end_time";
   static var status = "status";
+  static var createdAt = "created_at";
 
   static insertTask(task)async{
     final insertResponse = await client
@@ -38,6 +41,7 @@ class TasksService {
       throw Exception('Error updating task status: $e');
     }
   }
+
   static Future<Map<String, List<Map<String, dynamic>>>> getCategorizedTasks() async {
     try {
       final user = await UserService.getCurrentUserData();
@@ -51,12 +55,14 @@ class TasksService {
 
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
+      final yesterday = today.subtract(const Duration(days: 1));
       final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
-      final endOfWeek = startOfWeek.add(Duration(days: 6));
+      final endOfWeek = startOfWeek.add(const Duration(days: 6));
       final startOfMonth = DateTime(now.year, now.month, 1);
       final endOfMonth = DateTime(now.year, now.month + 1, 0);
 
       List<Map<String, dynamic>> todayTasks = [];
+      List<Map<String, dynamic>> yesterdayTasks = [];
       List<Map<String, dynamic>> weeklyTasks = [];
       List<Map<String, dynamic>> monthlyTasks = [];
 
@@ -64,26 +70,28 @@ class TasksService {
         final createdAt = DateTime.parse(task['created_at']);
         final createdDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
 
-        // Check if it's today
         if (createdDate == today) {
           todayTasks.add(task);
         }
 
-        // Check if it's within this week
-        if (createdDate.isAfter(startOfWeek.subtract(Duration(days: 1))) &&
-            createdDate.isBefore(endOfWeek.add(Duration(days: 1)))) {
+        if (createdDate == yesterday) {
+          yesterdayTasks.add(task);
+        }
+
+        if (createdDate.isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
+            createdDate.isBefore(endOfWeek.add(const Duration(days: 1)))) {
           weeklyTasks.add(task);
         }
 
-        // Check if it's within this month
-        if (createdDate.isAfter(startOfMonth.subtract(Duration(days: 1))) &&
-            createdDate.isBefore(endOfMonth.add(Duration(days: 1)))) {
+        if (createdDate.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+            createdDate.isBefore(endOfMonth.add(const Duration(days: 1)))) {
           monthlyTasks.add(task);
         }
       }
 
       return {
         'today': todayTasks,
+        'yesterday': yesterdayTasks,
         'week': weeklyTasks,
         'month': monthlyTasks,
       };
@@ -93,9 +101,15 @@ class TasksService {
     }
   }
 
-
-
-
+  static Future<void> importTask(selectedIndexes,uncompletedTasks) async {
+    final today = DateTime.now();
+    for (var index in selectedIndexes) {
+      final task = uncompletedTasks[index];
+      await client.from(tasks).update({
+        createdAt : today.toIso8601String(),
+      }).eq(id, task.id);
+    }
+  }
 
   static Future<Map<String, Map<String, dynamic>>> getTaskCounts() async {
     try {
@@ -163,7 +177,6 @@ class TasksService {
       throw Exception('Error getting task counts: $e');
     }
   }
-
 
   static updateTask(taskId,task)async{
     final insertResponse = await client

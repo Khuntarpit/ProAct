@@ -8,6 +8,7 @@ import 'package:proact/services/task_service.dart';
 import 'package:proact/services/user_service.dart';
 
 import '../screens/home/gemini_prompt.dart';
+import '../utils/utils.dart';
 import 'dashbord_controller.dart';
 
 class HomeController extends GetxController {
@@ -20,10 +21,12 @@ class HomeController extends GetxController {
     'today': [],
     'week': [],
     'month': [],
+    'yesterday': [],
   };
   List<TaskModel> todayTasks = <TaskModel>[];
   List<TaskModel> weeklyTasks = <TaskModel>[];
   List<TaskModel> monthlyTasks = <TaskModel>[];
+  List<TaskModel> yesterdayTasks = <TaskModel>[];
 
 
   Future<void> loadUserTasks() async {
@@ -35,13 +38,15 @@ class HomeController extends GetxController {
         'today': data['today']!.map((e) => TaskModel.fromJson(e)).toList(),
         'week': data['week']!.map((e) => TaskModel.fromJson(e)).toList(),
         'month': data['month']!.map((e) => TaskModel.fromJson(e)).toList(),
+        'yesterday': data['yesterday']!.map((e) => TaskModel.fromJson(e)).toList(),
       };
 
       todayTasks = tasksList['today']!;
       weeklyTasks = tasksList['week']!;
       monthlyTasks = tasksList['month']!;
+      yesterdayTasks = tasksList['yesterday']!;
 
-      print("✅ todayTasks: ${todayTasks.length} weeklyTasks : ${weeklyTasks.length} monthlyTasks :${monthlyTasks.length}");
+      print("✅ todayTasks: ${todayTasks.length} YesterdayTask : ${yesterdayTasks.length} weeklyTasks : ${weeklyTasks.length} monthlyTasks :${monthlyTasks.length}");
 
       update();
     } catch (e) {
@@ -50,12 +55,11 @@ class HomeController extends GetxController {
       todayTasks = [];
       weeklyTasks = [];
       monthlyTasks = [];
+      yesterdayTasks = [];
     } finally {
       isLoading.value = false;
     }
   }
-
-
 
   Future<void> updateTaskStatus(taskId, newStatus) async {
     await TasksService.updateTaskStatus(taskId, newStatus);
