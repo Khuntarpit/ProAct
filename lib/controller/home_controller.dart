@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:calendar_day_view/calendar_day_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:proact/blockapps/executables/controllers/method_channel_controller.dart';
 
 import 'package:proact/model/task_model.dart';
 import 'package:proact/services/task_service.dart';
@@ -47,8 +48,9 @@ class HomeController extends GetxController {
       yesterdayTasks = tasksList['yesterday']!;
 
       print("✅ todayTasks: ${todayTasks.length} YesterdayTask : ${yesterdayTasks.length} weeklyTasks : ${weeklyTasks.length} monthlyTasks :${monthlyTasks.length}");
-
       update();
+      MethodChannelController ctrl = Get.put(MethodChannelController());
+      ctrl.saveEvents(jsonEncode(todayTasks.map((e) => e.toLocalJson(),).toList()));
     } catch (e) {
       print('❗ Error fetching tasks: $e');
       tasksList = {'today': [], 'week': [], 'month': []};

@@ -41,4 +41,14 @@ class TaskModel {
       'created_at': createdAt.toIso8601String(),
     };
   }
+
+  Map<String, dynamic> toLocalJson() {
+    return {
+      'name': title,
+      'startTime': startTime,
+      'endTime': endTime,
+      'currenttimeinmillis': '${DateTime.now().millisecondsSinceEpoch}',
+      'donesStatus': status == 0 ? 'false' : 'true'
+    };
+  }
 }
