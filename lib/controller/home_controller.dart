@@ -121,25 +121,27 @@ class HomeController extends GetxController {
 
   List<DayEvent<String>> get parsedDayEvents {
     List<DayEvent<String>> dayEvents = [];
-    DateTime now = DateTime.now();
 
-    for (var event in todayTasks) {
+    for (var event in monthlyTasks) {
       try {
-        String startTime = event.startTime;
+        String startTime = event.startTime.trim();
+        String endTime = event.endTime.trim();
+
         var startSplit = startTime.split(":");
+        var endSplit = endTime.split(":");
+
         int startHour = int.parse(startSplit[0]);
         int startMinutes = int.parse(startSplit[1].substring(0, 2));
 
-        String endTime = event.endTime;
-        var endSplit = endTime.split(":");
         int endHour = int.parse(endSplit[0]);
         int endMinutes = int.parse(endSplit[1].substring(0, 2));
 
         String title = event.title;
+        DateTime taskDate = event.createdAt;
 
         dayEvents.add(DayEvent<String>(
-          start: DateTime(now.year, now.month, now.day, startHour, startMinutes),
-          end: DateTime(now.year, now.month, now.day, endHour, endMinutes),
+          start: DateTime(taskDate.year, taskDate.month, taskDate.day, startHour, startMinutes),
+          end: DateTime(taskDate.year, taskDate.month, taskDate.day, endHour, endMinutes),
           value: title,
           name: title,
         ));
@@ -147,6 +149,7 @@ class HomeController extends GetxController {
         print("Error parsing event: $e");
       }
     }
+
 
     return dayEvents;
   }
