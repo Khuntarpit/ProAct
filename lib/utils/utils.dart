@@ -88,11 +88,13 @@ Future<bool> backPressed(BuildContext context) async {
  }
  return back;
 }
-void showYesterdayUncompletedTasksDialog(BuildContext context ) {
+Future<void> showYesterdayUncompletedTasksDialog(BuildContext context) {
  HomeController homeController = Get.find();
- final uncompletedTasks = homeController.yesterdayTasks.where((task) => task.status == 0).toList();
+ final uncompletedTasks =
+ homeController.weeklyTasks.where((task) => task.status == 0).toList();
  Set<int> selectedIndexes = {};
- showDialog(
+
+ return showDialog(
   context: context,
   builder: (context) => StatefulBuilder(
    builder: (context, setState) {
@@ -122,13 +124,16 @@ void showYesterdayUncompletedTasksDialog(BuildContext context ) {
           child: Row(
            children: [
             Expanded(
-             child: Text(task.title, style: const TextStyle(fontSize: 13
-             )),
+             child: Text(
+              task.title,
+              style: const TextStyle(fontSize: 13),
+             ),
             ),
             Checkbox(
              value: selectedIndexes.contains(index),
              checkColor: Get.theme.iconTheme.color,
-             fillColor: WidgetStatePropertyAll(Colors.transparent),
+             fillColor:
+             const WidgetStatePropertyAll(Colors.transparent),
              onChanged: (value) {
               setState(() {
                if (value == true) {
@@ -149,31 +154,34 @@ void showYesterdayUncompletedTasksDialog(BuildContext context ) {
      actions: [
       TextButton(
        onPressed: () => Get.back(),
-       child:  Text("Close",style: TextStyle(color: Theme.of(context).iconTheme.color),),
+       child: Text(
+        "Close",
+        style: TextStyle(color: Theme.of(context).iconTheme.color),
+       ),
       ),
       if (uncompletedTasks.isNotEmpty)
        ElevatedButton(
         onPressed: () async {
          Utils.showLoading();
          await TasksService.importTask(selectedIndexes, uncompletedTasks);
-         DashboardController ctrl = Get.find();
-         ctrl.updateProgress();
-         Future.delayed(Duration(milliseconds: 200),() {
-          HomeController controller = Get.find();
-          controller.loadUserTasks();
-         },);
-         Get.back();
+         Get.find<DashboardController>().updateProgress();
+
+         await Future.delayed(const Duration(milliseconds: 200));
+         await Get.find<HomeController>().loadUserTasks();
+
+         Get.back(); // Close dialog
          Utils.closeLoading();
         },
         style: ElevatedButton.styleFrom(
-         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+         padding:
+         const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
          backgroundColor: Theme.of(context).iconTheme.color,
          shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
          ),
          elevation: 3,
         ),
-        child:  Text(
+        child: Text(
          "Import",
          style: TextStyle(
           fontSize: 14,
@@ -183,7 +191,6 @@ void showYesterdayUncompletedTasksDialog(BuildContext context ) {
          ),
         ),
        ),
-
      ],
     );
    },

@@ -24,14 +24,19 @@ class _SplashScreenState extends State<SplashScreen> {
       if(user == null){
         Get.offNamed(Routes.loginScreen);
       } else {
+        await homeController.loadUserTasks();
         Get.offNamed(Routes.homeScreen);
-        if(homeController.yesterdayTasks.isNotEmpty){
-          showYesterdayUncompletedTasksDialog(context);
+        if (homeController.weeklyTasks.isNotEmpty) {
+          await showYesterdayUncompletedTasksDialog(context);
         }
+        Get.offNamed(Routes.homeScreen); // Happens after dialog
+
       }
     });
     super.initState();
   }
+
+
 
   @override
   Widget build(BuildContext context) {

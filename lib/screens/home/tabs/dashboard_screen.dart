@@ -14,6 +14,7 @@ import 'package:proact/utils/hive_store_util.dart';
 import '../../../controller/home_controller.dart';
 import '../../../controller/dashbord_controller.dart';
 import '../../../model/user_model.dart';
+import '../../../utils/utils.dart';
 
 class DashboardScreen extends StatelessWidget {
   final DashboardController controller = Get.put(DashboardController());
@@ -42,11 +43,14 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Text(
-                'Hi, ${HiveStoreUtil.getString(HiveStoreUtil.firstNameKey)}',
-                style: GoogleFonts.poppins(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () => showYesterdayUncompletedTasksDialog(context),
+                child: Text(
+                  'Hi, ${HiveStoreUtil.getString(HiveStoreUtil.firstNameKey)}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
