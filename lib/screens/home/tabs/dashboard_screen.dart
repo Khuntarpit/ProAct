@@ -43,16 +43,13 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () => showYesterdayUncompletedTasksDialog(context),
-                child: Text(
+               Text(
                   'Hi, ${HiveStoreUtil.getString(HiveStoreUtil.firstNameKey)}',
                   style: GoogleFonts.poppins(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
             ],
           );
         },),
