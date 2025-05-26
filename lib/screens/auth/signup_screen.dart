@@ -86,6 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     SizedBox(height: 15),
                     CommonTextField(
+                      obscureText: true,
                       label: "Password",
                       controller: controller.passwordController,
                       hintText: "Password",

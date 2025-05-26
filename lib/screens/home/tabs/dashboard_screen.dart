@@ -39,7 +39,8 @@ class DashboardScreen extends StatelessWidget {
                   child: CircleAvatar(
                     backgroundImage: NetworkImage(user.photo.isNotEmpty
                         ? user.photo
-                        :"https://www.manageengine.com/images/speaker-placeholder.png"),
+                        :"https://www.manageengine.com/images/speaker-placeholder.png"
+                    ),
                   ),
                 ),
               ),
@@ -62,8 +63,7 @@ class DashboardScreen extends StatelessWidget {
                 },
                 icon: Icon(Icons.lock,size: 25,color: Theme.of(context).iconTheme.color,),
               ),
-            ),
-
+           ),
         ],
       ),
       body: RefreshIndicator(
